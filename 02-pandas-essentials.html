@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pandas Essentials — MokshPath Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --orange:#E87A2E;--orange-dark:#D06A20;--orange-light:#F5943E;--orange-glow:rgba(232,122,46,0.12);
+  --navy:#2B2D42;--navy-dark:#1A1B2E;
+  --bg:#F3EDE7;--bg-card:#FFFFFF;--bg-light:#F9F5F0;
+  --text-primary:#2B2D42;--text-secondary:#6B6D7B;--text-muted:#9597A6;
+  --border:#E5DDD4;--green:#4CAF50;--green-light:#E8F5E9;--blue:#4285F4;--red:#E74C3C;--purple:#8B5CF6;
+  --shadow-sm:0 2px 8px rgba(43,45,66,0.06);--shadow-md:0 8px 24px rgba(43,45,66,0.08);--shadow-lg:0 16px 48px rgba(43,45,66,0.12);
+  --radius:14px;--radius-sm:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+/* Top Navigation Bar */
+.topbar{background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 2rem;height:72px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+.topbar-left{display:flex;align-items:center;gap:.8rem}
+.topbar-title-wrap{display:flex;flex-direction:column;line-height:1.2}
+.topbar-eyebrow{font-size:.7rem;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:1.15rem;color:var(--navy)}
+.topbar-logo{height:48px;width:auto}
+
+/* Hero */
+.hero{padding:4rem 2rem 3rem;position:relative;overflow:hidden;background:linear-gradient(135deg,#FFFAF3 0%,#F3EDE7 100%)}
+.hero-inner{max-width:1160px;margin:0 auto;text-align:center;position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1.1rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.2rem;animation:fadeUp .7s ease}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1.13;color:var(--navy);margin-bottom:1rem;animation:fadeUp .7s ease .1s both}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero-sub{font-size:1.05rem;color:var(--text-secondary);line-height:1.7;max-width:640px;margin:0 auto 2rem;animation:fadeUp .7s ease .2s both}
+.topic-pills{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;animation:fadeUp .7s ease .3s both}
+.topic-pill{padding:.5rem 1.1rem;background:var(--bg-card);border:1.5px solid var(--border);border-radius:50px;font-size:.78rem;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:all .25s;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem}
+.topic-pill:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.topic-pill .num{width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700}
+.hero-shape{position:absolute;border-radius:50%;opacity:.4;filter:blur(40px)}
+.hero-shape-1{top:-80px;left:-60px;width:280px;height:280px;background:var(--orange-light)}
+.hero-shape-2{bottom:-80px;right:-60px;width:300px;height:300px;background:#FFDFA8}
+
+/* Lesson Section */
+.lesson{padding:4rem 2rem;border-bottom:1px solid var(--border)}
+.lesson:nth-child(odd){background:var(--bg-card)}
+.lesson-inner{max-width:1100px;margin:0 auto}
+.lesson-header{margin-bottom:2.5rem;display:flex;gap:1.5rem;align-items:flex-start}
+.lesson-num{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--orange),var(--orange-light));color:#fff;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1.8rem;flex-shrink:0;box-shadow:0 8px 20px rgba(232,122,46,0.25)}
+.lesson-header-text{flex:1}
+.lesson-eyebrow{font-size:.72rem;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.lesson-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);line-height:1.2;margin-bottom:.6rem}
+.lesson-sub{font-size:.98rem;color:var(--text-secondary);line-height:1.65;max-width:760px}
+
+/* Scenario card */
+.scenario{background:var(--bg-light);border-left:4px solid var(--orange);padding:1.2rem 1.5rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-bottom:2rem}
+.scenario-label{font-size:.68rem;font-weight:800;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
+.scenario-label::before{content:'🏢';font-size:.85rem}
+.scenario-text{font-size:.92rem;color:var(--text-primary);line-height:1.6}
+
+/* Visualization area */
+.viz-container{background:#FAFAFA;border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.viz-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
+.viz-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--navy);display:flex;align-items:center;gap:.5rem}
+.viz-title-dot{width:8px;height:8px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
+.viz-btn{padding:.55rem 1.1rem;border-radius:8px;border:1.5px solid var(--orange);background:var(--orange);color:#fff;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+.viz-btn:hover{background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.viz-btn.secondary{background:transparent;color:var(--orange)}
+.viz-btn.secondary:hover{background:var(--orange-glow);color:var(--orange-dark)}
+
+.step-explainer{background:var(--bg-card);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.2rem;border:1px solid var(--border);min-height:60px;transition:all .3s}
+.step-explainer-label{font-size:.65rem;font-weight:800;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.step-explainer-text{font-size:.92rem;color:var(--text-primary);line-height:1.55}
+
+.stage{background:#fff;border:1px dashed var(--border);border-radius:var(--radius-sm);min-height:340px;position:relative;overflow:hidden;padding:1.5rem;display:flex;align-items:center;justify-content:center}
+
+/* DataFrame Table */
+.df-table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.06);border-radius:8px;overflow:hidden;transition:all .4s}
+.df-table th{background:var(--navy-dark);color:#fff;padding:.6rem .9rem;text-align:left;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase}
+.df-table td{padding:.55rem .9rem;border-top:1px solid var(--border);color:var(--navy);transition:all .4s}
+.df-table tr{transition:all .5s ease}
+.df-table tr.highlight td{background:var(--orange-glow);color:var(--orange-dark);font-weight:700}
+.df-table tr.dim td{opacity:.25}
+.df-table tr.hide{opacity:0;transform:scaleY(0);height:0;line-height:0}
+.df-table tr.group-a td{background:rgba(66,133,244,0.08)}
+.df-table tr.group-b td{background:rgba(76,175,80,0.08)}
+.df-table tr.group-c td{background:rgba(139,92,246,0.08)}
+.df-table tr.group-d td{background:rgba(232,122,46,0.08)}
+
+/* CSV File visualization */
+.csv-stage{display:flex;align-items:center;gap:2rem;justify-content:center;flex-wrap:wrap}
+.csv-icon{width:120px;height:140px;background:#fff;border:2px solid var(--border);border-radius:10px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--shadow-md);transition:all .4s}
+.csv-icon::before{content:'';position:absolute;top:0;right:0;width:30px;height:30px;background:linear-gradient(135deg,transparent 50%,var(--border) 50%)}
+.csv-corner{position:absolute;top:5px;right:5px;width:18px;height:18px;background:var(--orange);color:#fff;font-size:.5rem;font-weight:800;display:flex;align-items:center;justify-content:center;border-radius:3px}
+.csv-lines{display:flex;flex-direction:column;gap:6px;padding:0 1rem;width:100%}
+.csv-line{height:5px;background:var(--border);border-radius:2px}
+.csv-line:nth-child(1){width:80%}
+.csv-line:nth-child(2){width:65%}
+.csv-line:nth-child(3){width:75%}
+.csv-line:nth-child(4){width:55%}
+.csv-icon.loading{animation:csvShake 0.4s ease infinite;border-color:var(--orange)}
+@keyframes csvShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+.csv-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);margin-top:.5rem;font-weight:600}
+.csv-arrow{font-size:2rem;color:var(--orange);opacity:0;transition:all .4s;animation:slideArrow 1.2s ease infinite}
+.csv-arrow.visible{opacity:1}
+@keyframes slideArrow{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+
+/* Groupby buckets */
+.groupby-stage{display:flex;align-items:flex-start;gap:1.2rem;justify-content:center;flex-wrap:wrap;width:100%}
+.bucket{flex:1;min-width:140px;max-width:200px;background:var(--bg-light);border:2px dashed var(--border);border-radius:12px;padding:.9rem;display:flex;flex-direction:column;gap:.4rem;transition:all .4s}
+.bucket.active{border-color:var(--orange);border-style:solid;background:#FFF8F0}
+.bucket-label{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;color:var(--navy);text-align:center;padding-bottom:.4rem;border-bottom:1.5px solid var(--border)}
+.bucket-item{padding:.35rem .55rem;background:#fff;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--navy);border:1px solid var(--border);text-align:center;transition:all .4s;transform:scale(0);transform-origin:center}
+.bucket-item.show{transform:scale(1)}
+.bucket-sum{margin-top:.6rem;padding:.5rem;background:var(--orange);color:#fff;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;text-align:center;transform:scale(0);transition:transform .4s}
+.bucket-sum.show{transform:scale(1)}
+
+/* Pivot table viz */
+.pivot-stage{display:grid;grid-template-columns:1fr auto 1fr;gap:1.5rem;align-items:center;width:100%}
+.pivot-col{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.pivot-arrow{font-size:2rem;color:var(--orange);font-weight:bold}
+.pivot-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text-muted);font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.4rem}
+
+/* Merge viz */
+.merge-stage{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;width:100%}
+.merge-col{display:flex;flex-direction:column;gap:.3rem}
+.merge-row{padding:.45rem .7rem;background:#fff;border:1.5px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.72rem;display:flex;justify-content:space-between;gap:.7rem;transition:all .4s}
+.merge-row.matched{border-color:var(--green);background:var(--green-light);color:#2E7D32;font-weight:700}
+.merge-row.no-match{opacity:.3;text-decoration:line-through}
+.merge-key{color:var(--orange);font-weight:700}
+.merge-plus{font-size:2.4rem;color:var(--orange);font-weight:bold;text-align:center;font-family:'DM Serif Display',serif;animation:pulse 2s infinite}
+.merge-result{margin-top:1rem;background:linear-gradient(135deg,var(--green-light),#fff);border:2px solid var(--green);border-radius:8px;padding:.8rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;opacity:0;transition:opacity .5s}
+.merge-result.show{opacity:1}
+.merge-result-label{font-size:.6rem;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;text-align:center}
+
+/* Code display */
+.code-block{background:#1a1b2e;border-radius:var(--radius);padding:1.4rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.7;color:#E8E8F0;overflow-x:auto;position:relative;margin-bottom:1rem}
+.code-header{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-dot{width:11px;height:11px;border-radius:50%}.code-dot.r{background:#FF5F57}.code-dot.y{background:#FEBC2E}.code-dot.g{background:#28C840}
+.code-filename{margin-left:.6rem;font-size:.72rem;color:rgba(255,255,255,0.5);font-family:'JetBrains Mono',monospace}
+.code-keyword{color:#FF7B72}.code-string{color:#A5D6FF}.code-num{color:#79C0FF}.code-fn{color:#D2A8FF}.code-comment{color:#8B949E;font-style:italic}.code-builtin{color:#FFA657}.code-method{color:#FFA657}
+
+.output-block{background:#0d1117;border-radius:var(--radius);padding:1.2rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#E8E8F0;border:1px solid rgba(126,231,135,0.2);position:relative;overflow-x:auto;line-height:1.6}
+.output-label{font-size:.65rem;color:var(--text-muted);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.output-label::before{content:'▶';color:var(--green);font-size:.6rem}
+.output-block .hdr{color:#FFA657;font-weight:700}
+.output-block .val{color:#7EE787}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
+
+.takeaway{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border-radius:var(--radius);padding:1.5rem 1.8rem;margin-top:1.5rem;position:relative;overflow:hidden}
+.takeaway::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(232,122,46,0.15)}
+.takeaway-label{font-size:.7rem;font-weight:800;color:var(--orange-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;position:relative}
+.takeaway-text{font-size:.95rem;line-height:1.6;color:rgba(255,255,255,0.95);position:relative}
+.takeaway-text strong{color:var(--orange-light)}
+
+footer{background:var(--navy-dark);color:#fff;padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:800px;margin:0 auto}
+.footer-title{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:.5rem}
+.footer-title em{color:var(--orange);font-style:normal}
+.footer-sub{color:rgba(255,255,255,0.6);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem}
+.footer-nav{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.footer-nav a{padding:.5rem 1.1rem;background:rgba(255,255,255,0.06);color:#fff;text-decoration:none;border-radius:8px;font-size:.82rem;font-weight:500;transition:all .2s;border:1px solid rgba(255,255,255,0.08)}
+.footer-nav a:hover{background:var(--orange);border-color:var(--orange);transform:translateY(-2px)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(0.9)}}
+
+@media(max-width:760px){
+  .topbar{padding:0 1rem;height:60px}
+  .topbar-logo{height:40px}
+  .topbar-title{font-size:.95rem}
+  .hero{padding:2.5rem 1.2rem 2rem}
+  .lesson{padding:2.5rem 1.2rem}
+  .lesson-header{flex-direction:column;gap:1rem}
+  .lesson-num{width:52px;height:52px;font-size:1.5rem}
+  .viz-container{padding:1.2rem}
+  .stage{padding:1rem;min-height:240px}
+  .two-col{grid-template-columns:1fr}
+  .csv-stage{flex-direction:column}
+  .pivot-stage,.merge-stage{grid-template-columns:1fr}
+  .pivot-arrow,.merge-plus{transform:rotate(90deg)}
+  .df-table{font-size:.7rem}
+  .df-table th,.df-table td{padding:.4rem .5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-title-wrap">
+      <span class="topbar-eyebrow">Lesson 02 · Tabular Data</span>
+      <span class="topbar-title">Pandas Essentials</span>
+    </div>
+  </div>
+  <img src="hero.svg" alt="MokshPath Logo" class="topbar-logo">
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-shape hero-shape-1"></div>
+  <div class="hero-shape hero-shape-2"></div>
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span>Visual Learning · Watch tables come alive</div>
+    <h1>Pandas — <em>Excel on Steroids</em> for Real Data Work</h1>
+    <p class="hero-sub">Pandas is how analysts load CSVs, ask questions of them, and reshape them in seconds. Through animated examples on a real retail dataset, you'll see exactly what each operation does to your rows and columns.</p>
+    <div class="topic-pills">
+      <a class="topic-pill" href="#load"><span class="num">1</span>Load &amp; Inspect</a>
+      <a class="topic-pill" href="#filter"><span class="num">2</span>Filter &amp; Sort</a>
+      <a class="topic-pill" href="#group"><span class="num">3</span>GroupBy</a>
+      <a class="topic-pill" href="#pivot"><span class="num">4</span>Pivot Table</a>
+      <a class="topic-pill" href="#merge"><span class="num">5</span>Merge</a>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 1: LOAD AND INSPECT -->
+<section class="lesson" id="load">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">1</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">First Contact With Data</div>
+        <h2 class="lesson-title">read_csv &amp; Inspect — Open the file, see what's inside</h2>
+        <p class="lesson-sub">Every pandas project starts the same way: load a CSV into a <strong>DataFrame</strong> (think Excel sheet in Python), then quickly peek at the data to understand its shape, types, and basic statistics.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A retail analyst receives <strong>sales_q1.csv</strong> from the warehouse. Before any analysis, she needs to know: how many rows? What columns? Any obvious issues? Pandas gives this in 3 lines.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch a CSV become a DataFrame</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetLoad()">↺ Reset</button>
+          <button class="viz-btn" onclick="playLoad()">▶ Play Animation</button>
+        </div>
+      </div>
+      <div class="step-explainer" id="loadExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">Press play. We'll load a CSV and inspect its first 5 rows, dimensions, and column types.</div>
+      </div>
+      <div class="stage">
+        <div class="csv-stage">
+          <div>
+            <div class="csv-icon" id="csvIcon">
+              <div class="csv-corner">CSV</div>
+              <div class="csv-lines"><div class="csv-line"></div><div class="csv-line"></div><div class="csv-line"></div><div class="csv-line"></div></div>
+            </div>
+            <div class="csv-label">sales_q1.csv</div>
+          </div>
+          <div class="csv-arrow" id="csvArr">→</div>
+          <div id="dfWrap" style="opacity:0;transition:opacity .6s">
+            <table class="df-table" id="loadTable">
+              <thead><tr><th>order_id</th><th>product</th><th>region</th><th>units</th><th>revenue</th></tr></thead>
+              <tbody>
+                <tr><td>1001</td><td>Laptop</td><td>North</td><td>2</td><td>120000</td></tr>
+                <tr><td>1002</td><td>Phone</td><td>South</td><td>5</td><td>75000</td></tr>
+                <tr><td>1003</td><td>Tablet</td><td>East</td><td>3</td><td>45000</td></tr>
+                <tr><td>1004</td><td>Laptop</td><td>West</td><td>1</td><td>60000</td></tr>
+                <tr><td>1005</td><td>Phone</td><td>North</td><td>4</td><td>60000</td></tr>
+              </tbody>
+            </table>
+            <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text-muted);margin-top:.6rem;font-weight:600">DataFrame · 5,000 rows × 5 cols</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><div class="code-filename">inspect.py</div></div>
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+
+<span class="code-comment"># Load the CSV into a DataFrame</span>
+df = pd.<span class="code-method">read_csv</span>(<span class="code-string">"sales_q1.csv"</span>)
+
+<span class="code-comment"># Quick look at the top 5 rows</span>
+df.<span class="code-method">head</span>()
+
+<span class="code-comment"># Shape: (rows, columns)</span>
+df.<span class="code-method">shape</span>      <span class="code-comment"># → (5000, 5)</span>
+
+<span class="code-comment"># Column types and missing counts</span>
+df.<span class="code-method">info</span>()
+
+<span class="code-comment"># Quick stats for numeric columns</span>
+df.<span class="code-method">describe</span>()</div>
+
+      <div class="output-block">
+        <div class="output-label">df.describe() output</div>
+<span class="hdr">           units      revenue</span>
+count    5000.00      5000.00
+mean        3.40     58420.00
+std         1.85     32140.50
+min         1.00     12000.00
+25%         2.00     38000.00
+50%         3.00     54000.00
+75%         5.00     78500.00
+max        12.00    180000.00
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text"><strong>Always inspect first.</strong> <code>head()</code>, <code>info()</code>, and <code>describe()</code> together tell you in under 10 seconds what the data looks like. Skip this and you'll waste hours debugging later.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 2: FILTER AND SORT -->
+<section class="lesson" id="filter">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">2</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">Asking Questions Of Data</div>
+        <h2 class="lesson-title">Filter &amp; Sort — Find what matters, in the order you want</h2>
+        <p class="lesson-sub">Filtering keeps only rows matching a condition. Sorting reorders rows by a column. These two operations cover <strong>80% of daily data work</strong>.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">Marketing wants to see <strong>only high-value orders (revenue &gt; 60,000)</strong>, sorted from biggest to smallest, to identify VIP customers.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch rows get filtered then reordered</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetFilter()">↺ Reset</button>
+          <button class="viz-btn" onclick="playFilter()">▶ Play Animation</button>
+        </div>
+      </div>
+      <div class="step-explainer" id="filterExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">We'll first filter rows where revenue &gt; 60,000, then sort the survivors descending.</div>
+      </div>
+      <div class="stage" style="display:block;padding:1.5rem">
+        <table class="df-table" id="filterTable" style="margin:0 auto">
+          <thead><tr><th>order_id</th><th>product</th><th>region</th><th>units</th><th>revenue</th></tr></thead>
+          <tbody>
+            <tr data-rev="120000"><td>1001</td><td>Laptop</td><td>North</td><td>2</td><td>120000</td></tr>
+            <tr data-rev="75000"><td>1002</td><td>Phone</td><td>South</td><td>5</td><td>75000</td></tr>
+            <tr data-rev="45000"><td>1003</td><td>Tablet</td><td>East</td><td>3</td><td>45000</td></tr>
+            <tr data-rev="60000"><td>1004</td><td>Laptop</td><td>West</td><td>1</td><td>60000</td></tr>
+            <tr data-rev="92000"><td>1005</td><td>Phone</td><td>North</td><td>4</td><td>92000</td></tr>
+            <tr data-rev="38000"><td>1006</td><td>Tablet</td><td>West</td><td>2</td><td>38000</td></tr>
+            <tr data-rev="155000"><td>1007</td><td>Laptop</td><td>East</td><td>3</td><td>155000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><div class="code-filename">vip_orders.py</div></div>
+<span class="code-comment"># FILTER: rows where revenue > 60,000</span>
+high_value = df[df[<span class="code-string">"revenue"</span>] &gt; <span class="code-num">60000</span>]
+
+<span class="code-comment"># SORT: largest revenue first</span>
+top_orders = high_value.<span class="code-method">sort_values</span>(
+    by=<span class="code-string">"revenue"</span>,
+    ascending=<span class="code-keyword">False</span>
+)
+
+<span class="code-builtin">print</span>(top_orders.<span class="code-method">head</span>())
+
+<span class="code-comment"># Chain both in one line:</span>
+top = (df[df.revenue &gt; <span class="code-num">60000</span>]
+       .<span class="code-method">sort_values</span>(<span class="code-string">"revenue"</span>, ascending=<span class="code-keyword">False</span>))</div>
+
+      <div class="output-block">
+        <div class="output-label">Filtered &amp; sorted output</div>
+<span class="hdr">  order_id  product  region  units  revenue</span>
+6     1007  Laptop    East      3  <span class="val">155000</span>
+0     1001  Laptop   North      2  <span class="val">120000</span>
+4     1005   Phone   North      4   <span class="val">92000</span>
+1     1002   Phone   South      5   <span class="val">75000</span>
+
+<span style="color:#8B949E;font-style:italic"># 4 rows survived the filter,
+# now sorted biggest → smallest.</span>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text">A boolean mask like <code>df.revenue &gt; 60000</code> is the <strong>most-used pandas pattern in the world</strong>. Combine multiple with <code>&amp;</code> (and) and <code>|</code> (or) to slice data any way you need.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 3: GROUPBY -->
+<section class="lesson" id="group">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">3</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">Summarising By Category</div>
+        <h2 class="lesson-title">groupby — Bucket the data, then aggregate</h2>
+        <p class="lesson-sub"><strong>"What's the total revenue per region?"</strong> That's a groupby. You split rows into groups (one per region), then apply a summary function (sum, mean, count) to each group.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">The CFO asks: <strong>"Which region performed best this quarter?"</strong> Instead of opening a calculator, you groupby region and sum revenue. Done in 1 line.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch rows split into buckets, then summed</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetGroup()">↺ Reset</button>
+          <button class="viz-btn" onclick="playGroup()">▶ Play Animation</button>
+        </div>
+      </div>
+      <div class="step-explainer" id="groupExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">Each row will fly to its region's bucket. Then each bucket's revenues are summed.</div>
+      </div>
+      <div class="stage">
+        <div class="groupby-stage">
+          <div class="bucket" id="bk-north">
+            <div class="bucket-label">North</div>
+            <div class="bucket-sum" id="sum-north">₹0</div>
+          </div>
+          <div class="bucket" id="bk-south">
+            <div class="bucket-label">South</div>
+            <div class="bucket-sum" id="sum-south">₹0</div>
+          </div>
+          <div class="bucket" id="bk-east">
+            <div class="bucket-label">East</div>
+            <div class="bucket-sum" id="sum-east">₹0</div>
+          </div>
+          <div class="bucket" id="bk-west">
+            <div class="bucket-label">West</div>
+            <div class="bucket-sum" id="sum-west">₹0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><div class="code-filename">region_summary.py</div></div>
+<span class="code-comment"># Total revenue per region</span>
+region_totals = (
+    df.<span class="code-method">groupby</span>(<span class="code-string">"region"</span>)[<span class="code-string">"revenue"</span>]
+      .<span class="code-method">sum</span>()
+      .<span class="code-method">sort_values</span>(ascending=<span class="code-keyword">False</span>)
+)
+
+<span class="code-builtin">print</span>(region_totals)
+
+<span class="code-comment"># Multiple aggregations at once:</span>
+df.<span class="code-method">groupby</span>(<span class="code-string">"region"</span>).<span class="code-method">agg</span>({
+    <span class="code-string">"revenue"</span>: [<span class="code-string">"sum"</span>, <span class="code-string">"mean"</span>],
+    <span class="code-string">"units"</span>:   <span class="code-string">"sum"</span>
+})</div>
+
+      <div class="output-block">
+        <div class="output-label">region_totals output</div>
+<span class="hdr">region</span>
+East     <span class="val">200,000</span>
+North    <span class="val">212,000</span>
+South     <span class="val">75,000</span>
+West      <span class="val">98,000</span>
+<span class="hdr">Name: revenue, dtype: int64</span>
+
+<span style="color:#8B949E;font-style:italic"># North wins this quarter.</span>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text"><strong>GroupBy is how every dashboard is built.</strong> Sales by region, sessions by device, revenue by month — they're all just <code>df.groupby(category)[metric].sum()</code> behind the scenes.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 4: PIVOT TABLE -->
+<section class="lesson" id="pivot">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">4</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">Reshape The Story</div>
+        <h2 class="lesson-title">pivot_table — Turn long lists into matrix-style views</h2>
+        <p class="lesson-sub">A pivot table takes a long list of records and reshapes it into a <strong>grid</strong> — like rows for products, columns for regions, and values inside being the sums. Excel users love this; pandas does it in one call.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A category manager wants a <strong>product × region revenue grid</strong> — one glance reveals where each product sells best.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch a long table reshape into a grid</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetPivot()">↺ Reset</button>
+          <button class="viz-btn" onclick="playPivot()">▶ Play Animation</button>
+        </div>
+      </div>
+      <div class="step-explainer" id="pivotExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">Same data — but reshaped from a long list into a compact product × region grid.</div>
+      </div>
+      <div class="stage">
+        <div class="pivot-stage">
+          <div class="pivot-col">
+            <div class="pivot-label">Before · Long format</div>
+            <table class="df-table" id="pivotBefore">
+              <thead><tr><th>product</th><th>region</th><th>revenue</th></tr></thead>
+              <tbody>
+                <tr><td>Laptop</td><td>North</td><td>120000</td></tr>
+                <tr><td>Phone</td><td>South</td><td>75000</td></tr>
+                <tr><td>Tablet</td><td>East</td><td>45000</td></tr>
+                <tr><td>Laptop</td><td>West</td><td>60000</td></tr>
+                <tr><td>Phone</td><td>North</td><td>92000</td></tr>
+                <tr><td>Laptop</td><td>East</td><td>155000</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pivot-arrow" id="pivotArrow" style="opacity:0;transition:opacity .5s">→</div>
+          <div class="pivot-col">
+            <div class="pivot-label">After · Wide grid</div>
+            <table class="df-table" id="pivotAfter" style="opacity:0;transition:opacity .6s">
+              <thead><tr><th>product</th><th>East</th><th>North</th><th>South</th><th>West</th></tr></thead>
+              <tbody>
+                <tr><td>Laptop</td><td>155K</td><td>120K</td><td>—</td><td>60K</td></tr>
+                <tr><td>Phone</td><td>—</td><td>92K</td><td>75K</td><td>—</td></tr>
+                <tr><td>Tablet</td><td>45K</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><div class="code-filename">pivot_grid.py</div></div>
+<span class="code-comment"># Reshape: products as rows, regions as cols</span>
+grid = df.<span class="code-method">pivot_table</span>(
+    index=<span class="code-string">"product"</span>,
+    columns=<span class="code-string">"region"</span>,
+    values=<span class="code-string">"revenue"</span>,
+    aggfunc=<span class="code-string">"sum"</span>,
+    fill_value=<span class="code-num">0</span>
+)
+
+<span class="code-builtin">print</span>(grid)
+
+<span class="code-comment"># Add totals on rows AND columns:</span>
+grid_total = df.<span class="code-method">pivot_table</span>(
+    index=<span class="code-string">"product"</span>, columns=<span class="code-string">"region"</span>,
+    values=<span class="code-string">"revenue"</span>, aggfunc=<span class="code-string">"sum"</span>,
+    margins=<span class="code-keyword">True</span>, margins_name=<span class="code-string">"Total"</span>
+)</div>
+
+      <div class="output-block">
+        <div class="output-label">pivot_table output</div>
+<span class="hdr">region    East   North  South   West</span>
+<span class="hdr">product</span>
+Laptop  <span class="val">155000</span>  <span class="val">120000</span>      0  <span class="val">60000</span>
+Phone        0   <span class="val">92000</span>  <span class="val">75000</span>      0
+Tablet   <span class="val">45000</span>       0      0      0
+
+<span style="color:#8B949E;font-style:italic"># Instantly see: Laptops dominate
+# East &amp; North. Phones lead in South.</span>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text">Pivot tables turn data into <strong>at-a-glance answers</strong>. Auditors, finance teams, and product managers all use these grids daily. Pandas removes the manual Excel work.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 5: MERGE -->
+<section class="lesson" id="merge">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">5</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">Joining Two Worlds</div>
+        <h2 class="lesson-title">merge — Combine two tables on a shared key</h2>
+        <p class="lesson-sub">Real businesses store data across many tables. <strong>Orders</strong> in one. <strong>Customers</strong> in another. <code>merge</code> joins them on a shared column (like customer_id), giving you a unified view.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">An analyst has an <strong>orders</strong> table (order_id, customer_id, amount) and a <strong>customers</strong> table (customer_id, name, city). She needs both joined to see <em>which city had the most revenue</em>.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch two tables join on a shared key</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetMerge()">↺ Reset</button>
+          <button class="viz-btn" onclick="playMerge()">▶ Play Animation</button>
+        </div>
+      </div>
+      <div class="step-explainer" id="mergeExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">We'll match every order to its customer using the shared <code>customer_id</code> column.</div>
+      </div>
+      <div class="stage" style="display:block;padding:1.5rem">
+        <div class="merge-stage">
+          <div class="merge-col">
+            <div class="pivot-label" style="text-align:center">Orders</div>
+            <div class="merge-row" id="m-o0"><span><span class="merge-key">C01</span> · ₹450</span></div>
+            <div class="merge-row" id="m-o1"><span><span class="merge-key">C02</span> · ₹890</span></div>
+            <div class="merge-row" id="m-o2"><span><span class="merge-key">C03</span> · ₹320</span></div>
+            <div class="merge-row" id="m-o3"><span><span class="merge-key">C99</span> · ₹150</span></div>
+            <div class="merge-row" id="m-o4"><span><span class="merge-key">C01</span> · ₹720</span></div>
+          </div>
+          <div class="merge-plus">⨝</div>
+          <div class="merge-col">
+            <div class="pivot-label" style="text-align:center">Customers</div>
+            <div class="merge-row" id="m-c0"><span><span class="merge-key">C01</span></span><span>Asha · Mumbai</span></div>
+            <div class="merge-row" id="m-c1"><span><span class="merge-key">C02</span></span><span>Rahul · Delhi</span></div>
+            <div class="merge-row" id="m-c2"><span><span class="merge-key">C03</span></span><span>Neha · Pune</span></div>
+          </div>
+        </div>
+        <div class="merge-result" id="mergeResult">
+          <div class="merge-result-label">Result · Merged Table</div>
+          <div id="mergeResultBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><div class="code-filename">join_tables.py</div></div>
+<span class="code-comment"># Two separate tables in your warehouse</span>
+orders    = pd.<span class="code-method">read_csv</span>(<span class="code-string">"orders.csv"</span>)
+customers = pd.<span class="code-method">read_csv</span>(<span class="code-string">"customers.csv"</span>)
+
+<span class="code-comment"># Inner join on customer_id</span>
+full = orders.<span class="code-method">merge</span>(
+    customers,
+    on=<span class="code-string">"customer_id"</span>,
+    how=<span class="code-string">"inner"</span>      <span class="code-comment"># only matched rows</span>
+)
+
+<span class="code-comment"># Now revenue by city in one go</span>
+full.<span class="code-method">groupby</span>(<span class="code-string">"city"</span>)[<span class="code-string">"amount"</span>].<span class="code-method">sum</span>()</div>
+
+      <div class="output-block">
+        <div class="output-label">After merge + groupby</div>
+<span class="hdr">city</span>
+Mumbai   <span class="val">1170</span>
+Delhi     <span class="val">890</span>
+Pune      <span class="val">320</span>
+<span class="hdr">Name: amount, dtype: int64</span>
+
+<span style="color:#8B949E;font-style:italic"># C99 was DROPPED because that
+# customer is not in the customers
+# table. (inner join behaviour)</span>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text"><strong>Every real dataset is split across multiple tables.</strong> <code>merge</code> is the SQL JOIN of pandas. Master <code>how="inner" / "left" / "right" / "outer"</code> and you can rebuild any database query.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">Next up: <em>Lesson 03</em></div>
+    <div class="footer-sub">Now that you can load &amp; reshape data, learn to <em>clean it</em> — missing values, duplicates, type conversion, and more.</div>
+    <div class="footer-nav">
+      <a href="01-python-review.html">1 · Python Review</a>
+      <a href="02-pandas-essentials.html">2 · Pandas Essentials</a>
+      <a href="03-data-cleaning.html">3 · Data Cleaning</a>
+      <a href="04-numpy-aggregation.html">4 · NumPy Aggregation</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ============ LOAD ANIMATION ============
+function resetLoad() {
+  document.getElementById('csvIcon').classList.remove('loading');
+  document.getElementById('csvArr').classList.remove('visible');
+  document.getElementById('dfWrap').style.opacity = '0';
+  document.getElementById('loadExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">Press play. We'll load a CSV and inspect its first 5 rows, dimensions, and column types.</div>`;
+}
+async function playLoad() {
+  resetLoad();
+  const e = document.getElementById('loadExplain');
+  e.innerHTML = `<div class="step-explainer-label">Step 1 · pd.read_csv("sales_q1.csv")</div><div class="step-explainer-text">Python reads the raw text file line by line, splits on commas, and detects column types.</div>`;
+  document.getElementById('csvIcon').classList.add('loading');
+  await sleep(1500);
+  document.getElementById('csvArr').classList.add('visible');
+  await sleep(600);
+  e.innerHTML = `<div class="step-explainer-label">Step 2 · DataFrame is born</div><div class="step-explainer-text">Pandas creates a structured table — rows you can filter, columns you can math on, types it tracks for you.</div>`;
+  document.getElementById('dfWrap').style.opacity = '1';
+  await sleep(1500);
+  document.getElementById('csvIcon').classList.remove('loading');
+  e.innerHTML = `<div class="step-explainer-label">Step 3 · Inspect with .head()</div><div class="step-explainer-text">The top 5 rows let you verify column names, sample values, and that nothing's obviously broken.</div>`;
+}
+
+// ============ FILTER ANIMATION ============
+function resetFilter() {
+  document.querySelectorAll('#filterTable tbody tr').forEach(tr => {
+    tr.classList.remove('highlight','dim','hide');
+    tr.style.transform = '';
+  });
+  // Restore original order
+  const tbody = document.querySelector('#filterTable tbody');
+  const originalOrder = [1001,1002,1003,1004,1005,1006,1007];
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  rows.sort((a,b) => parseInt(a.cells[0].textContent) - parseInt(b.cells[0].textContent));
+  rows.forEach(r => tbody.appendChild(r));
+  document.getElementById('filterExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">We'll first filter rows where revenue &gt; 60,000, then sort the survivors descending.</div>`;
+}
+async function playFilter() {
+  resetFilter();
+  const e = document.getElementById('filterExplain');
+  e.innerHTML = `<div class="step-explainer-label">Step 1 · Apply boolean mask</div><div class="step-explainer-text">Python evaluates <code>revenue &gt; 60000</code> for every row — TRUE rows stay highlighted, FALSE rows dim.</div>`;
+  await sleep(800);
+  const rows = document.querySelectorAll('#filterTable tbody tr');
+  rows.forEach(tr => {
+    const rev = parseInt(tr.dataset.rev);
+    if (rev > 60000) tr.classList.add('highlight');
+    else tr.classList.add('dim');
+  });
+  await sleep(2000);
+  e.innerHTML = `<div class="step-explainer-label">Step 2 · Drop unmatched rows</div><div class="step-explainer-text">The FALSE rows are removed. We're left with 4 high-value orders.</div>`;
+  rows.forEach(tr => { if (tr.classList.contains('dim')) tr.classList.add('hide'); });
+  await sleep(1500);
+  e.innerHTML = `<div class="step-explainer-label">Step 3 · Sort by revenue descending</div><div class="step-explainer-text">Now reorder so the biggest revenue is at the top.</div>`;
+  const tbody = document.querySelector('#filterTable tbody');
+  const kept = Array.from(tbody.querySelectorAll('tr.highlight'));
+  kept.sort((a,b) => parseInt(b.dataset.rev) - parseInt(a.dataset.rev));
+  await sleep(500);
+  kept.forEach(r => tbody.appendChild(r));
+  await sleep(1200);
+  e.innerHTML = `<div class="step-explainer-label">Done · VIP orders ready</div><div class="step-explainer-text">In two operations we got the exact list marketing asked for. <strong>Filter → sort → done.</strong></div>`;
+}
+
+// ============ GROUPBY ANIMATION ============
+const groupRows = [
+  { region: 'north', amount: 120000 },
+  { region: 'south', amount: 75000 },
+  { region: 'east',  amount: 45000 },
+  { region: 'west',  amount: 60000 },
+  { region: 'north', amount: 92000 },
+  { region: 'east',  amount: 155000 },
+  { region: 'west',  amount: 38000 },
+];
+function resetGroup() {
+  ['north','south','east','west'].forEach(r => {
+    const bk = document.getElementById('bk-' + r);
+    bk.classList.remove('active');
+    Array.from(bk.querySelectorAll('.bucket-item')).forEach(it => it.remove());
+    const s = document.getElementById('sum-' + r);
+    s.textContent = '₹0';
+    s.classList.remove('show');
+  });
+  document.getElementById('groupExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">Each row will fly to its region's bucket. Then each bucket's revenues are summed.</div>`;
+}
+async function playGroup() {
+  resetGroup();
+  const e = document.getElementById('groupExplain');
+  const sums = { north:0, south:0, east:0, west:0 };
+  for (let i = 0; i < groupRows.length; i++) {
+    const row = groupRows[i];
+    e.innerHTML = `<div class="step-explainer-label">Step ${i+1} · Routing row to ${row.region.toUpperCase()}</div><div class="step-explainer-text">This row has region=<strong>${row.region}</strong>, so it goes into the <strong>${row.region}</strong> bucket.</div>`;
+    const bk = document.getElementById('bk-' + row.region);
+    bk.classList.add('active');
+    const item = document.createElement('div');
+    item.className = 'bucket-item';
+    item.textContent = '₹' + (row.amount/1000) + 'K';
+    bk.insertBefore(item, document.getElementById('sum-' + row.region));
+    await sleep(50);
+    item.classList.add('show');
+    sums[row.region] += row.amount;
+    await sleep(600);
+    bk.classList.remove('active');
+  }
+  e.innerHTML = `<div class="step-explainer-label">Step ${groupRows.length+1} · Aggregate each bucket</div><div class="step-explainer-text">For each bucket, sum all the values. The totals reveal which region performed best.</div>`;
+  await sleep(700);
+  for (const r of ['north','south','east','west']) {
+    const s = document.getElementById('sum-' + r);
+    s.textContent = '₹' + sums[r].toLocaleString('en-IN');
+    s.classList.add('show');
+    await sleep(280);
+  }
+  await sleep(700);
+  e.innerHTML = `<div class="step-explainer-label">Done · Region totals revealed</div><div class="step-explainer-text"><strong>North leads with ₹212,000</strong>. Without groupby this would be 7 manual additions. Imagine 7,000 rows.</div>`;
+}
+
+// ============ PIVOT ANIMATION ============
+function resetPivot() {
+  document.getElementById('pivotArrow').style.opacity = '0';
+  document.getElementById('pivotAfter').style.opacity = '0';
+  document.querySelectorAll('#pivotBefore tbody tr').forEach(t => t.classList.remove('group-a','group-b','group-c','group-d'));
+  document.getElementById('pivotExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">Same data — but reshaped from a long list into a compact product × region grid.</div>`;
+}
+async function playPivot() {
+  resetPivot();
+  const e = document.getElementById('pivotExplain');
+  e.innerHTML = `<div class="step-explainer-label">Step 1 · Identify the two axes</div><div class="step-explainer-text">Rows = <strong>product</strong>. Columns = <strong>region</strong>. Cells = <strong>sum of revenue</strong>.</div>`;
+  await sleep(1500);
+  e.innerHTML = `<div class="step-explainer-label">Step 2 · Colour-code by product</div><div class="step-explainer-text">Each product becomes a row in the new grid. Watch Laptops turn blue, Phones green, Tablets purple.</div>`;
+  const rows = document.querySelectorAll('#pivotBefore tbody tr');
+  const colorMap = { 'Laptop':'group-a', 'Phone':'group-b', 'Tablet':'group-c' };
+  for (const r of rows) {
+    const prod = r.cells[0].textContent;
+    r.classList.add(colorMap[prod]);
+    await sleep(200);
+  }
+  await sleep(700);
+  e.innerHTML = `<div class="step-explainer-label">Step 3 · Reshape into the grid</div><div class="step-explainer-text">Each cell sums all matching rows. Empty cells (no data) become "—" or 0.</div>`;
+  document.getElementById('pivotArrow').style.opacity = '1';
+  await sleep(500);
+  document.getElementById('pivotAfter').style.opacity = '1';
+  await sleep(1500);
+  e.innerHTML = `<div class="step-explainer-label">Done · Crosstab view</div><div class="step-explainer-text">In one glance: <strong>Laptops dominate East &amp; North</strong>. Phones lead in South. Tablets need a strategy.</div>`;
+}
+
+// ============ MERGE ANIMATION ============
+function resetMerge() {
+  for (let i = 0; i < 5; i++) {
+    const r = document.getElementById('m-o' + i);
+    if (r) r.classList.remove('matched','no-match');
+  }
+  for (let i = 0; i < 3; i++) {
+    const r = document.getElementById('m-c' + i);
+    if (r) r.classList.remove('matched');
+  }
+  document.getElementById('mergeResult').classList.remove('show');
+  document.getElementById('mergeResultBody').innerHTML = '';
+  document.getElementById('mergeExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">We'll match every order to its customer using the shared <code>customer_id</code> column.</div>`;
+}
+async function playMerge() {
+  resetMerge();
+  const e = document.getElementById('mergeExplain');
+  const orders = [
+    {idx:0, key:'C01', amt:450, custIdx:0, name:'Asha · Mumbai'},
+    {idx:1, key:'C02', amt:890, custIdx:1, name:'Rahul · Delhi'},
+    {idx:2, key:'C03', amt:320, custIdx:2, name:'Neha · Pune'},
+    {idx:3, key:'C99', amt:150, custIdx:-1, name:null},
+    {idx:4, key:'C01', amt:720, custIdx:0, name:'Asha · Mumbai'},
+  ];
+  const merged = [];
+  for (const o of orders) {
+    e.innerHTML = `<div class="step-explainer-label">Step ${o.idx+1} · Looking up ${o.key}</div><div class="step-explainer-text">Search the customers table for matching <code>customer_id = ${o.key}</code>...</div>`;
+    const oRow = document.getElementById('m-o' + o.idx);
+    if (o.custIdx >= 0) {
+      const cRow = document.getElementById('m-c' + o.custIdx);
+      cRow.classList.add('matched');
+      await sleep(900);
+      oRow.classList.add('matched');
+      merged.push(`${o.key} · ₹${o.amt} · ${o.name}`);
+      await sleep(500);
+      cRow.classList.remove('matched');
+    } else {
+      e.innerHTML = `<div class="step-explainer-label">Step ${o.idx+1} · ${o.key} NOT FOUND</div><div class="step-explainer-text">No matching customer. In an <code>inner</code> join, this order is <strong>dropped</strong>.</div>`;
+      oRow.classList.add('no-match');
+      await sleep(1400);
+    }
+  }
+  e.innerHTML = `<div class="step-explainer-label">Done · Final merged table</div><div class="step-explainer-text">4 matched rows survived. The unmatched <code>C99</code> was discarded (inner join behaviour).</div>`;
+  document.getElementById('mergeResultBody').innerHTML = merged.map(m => `<div style="padding:.3rem 0;color:var(--navy)">✓ ${m}</div>`).join('');
+  document.getElementById('mergeResult').classList.add('show');
+}
+
+window.addEventListener('load', () => setTimeout(() => playLoad(), 1500));
+</script>
+</body>
+</html>

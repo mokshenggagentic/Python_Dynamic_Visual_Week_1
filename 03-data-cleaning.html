@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Cleaning — MokshPath Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --orange:#E87A2E;--orange-dark:#D06A20;--orange-light:#F5943E;--orange-glow:rgba(232,122,46,0.12);
+  --navy:#2B2D42;--navy-dark:#1A1B2E;
+  --bg:#F3EDE7;--bg-card:#FFFFFF;--bg-light:#F9F5F0;
+  --text-primary:#2B2D42;--text-secondary:#6B6D7B;--text-muted:#9597A6;
+  --border:#E5DDD4;--green:#4CAF50;--green-light:#E8F5E9;--blue:#4285F4;--red:#E74C3C;--red-light:#FFEDED;
+  --shadow-sm:0 2px 8px rgba(43,45,66,0.06);--shadow-md:0 8px 24px rgba(43,45,66,0.08);--shadow-lg:0 16px 48px rgba(43,45,66,0.12);
+  --radius:14px;--radius-sm:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+/* Top Navigation */
+.topbar{background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 2rem;height:72px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+.topbar-left{display:flex;align-items:center;gap:.8rem}
+.topbar-title-wrap{display:flex;flex-direction:column;line-height:1.2}
+.topbar-eyebrow{font-size:.7rem;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:1.15rem;color:var(--navy)}
+.topbar-logo{height:48px;width:auto}
+
+/* Hero */
+.hero{padding:4rem 2rem 3rem;position:relative;overflow:hidden;background:linear-gradient(135deg,#FFFAF3 0%,#F3EDE7 100%)}
+.hero-inner{max-width:1160px;margin:0 auto;text-align:center;position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1.1rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.2rem;animation:fadeUp .7s ease}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1.13;color:var(--navy);margin-bottom:1rem;animation:fadeUp .7s ease .1s both}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero-sub{font-size:1.05rem;color:var(--text-secondary);line-height:1.7;max-width:640px;margin:0 auto 2rem;animation:fadeUp .7s ease .2s both}
+
+/* Topic pills */
+.topic-pills{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;animation:fadeUp .7s ease .3s both}
+.topic-pill{padding:.5rem 1.1rem;background:var(--bg-card);border:1.5px solid var(--border);border-radius:50px;font-size:.78rem;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:all .25s;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem}
+.topic-pill:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.topic-pill .num{width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700}
+
+.hero-shape{position:absolute;border-radius:50%;opacity:.4;filter:blur(40px)}
+.hero-shape-1{top:-80px;left:-60px;width:280px;height:280px;background:var(--orange-light)}
+.hero-shape-2{bottom:-80px;right:-60px;width:300px;height:300px;background:#FFDFA8}
+
+/* Lesson section */
+.lesson{padding:4rem 2rem;border-bottom:1px solid var(--border)}
+.lesson:nth-child(odd){background:var(--bg-card)}
+.lesson-inner{max-width:1100px;margin:0 auto}
+.lesson-header{margin-bottom:2.5rem;display:flex;gap:1.5rem;align-items:flex-start}
+.lesson-num{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--orange),var(--orange-light));color:#fff;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1.8rem;flex-shrink:0;box-shadow:0 8px 20px rgba(232,122,46,0.25)}
+.lesson-header-text{flex:1}
+.lesson-eyebrow{font-size:.72rem;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.lesson-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);line-height:1.2;margin-bottom:.6rem}
+.lesson-sub{font-size:.98rem;color:var(--text-secondary);line-height:1.65;max-width:760px}
+
+/* Scenario */
+.scenario{background:var(--bg-light);border-left:4px solid var(--orange);padding:1.2rem 1.5rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-bottom:2rem}
+.scenario-label{font-size:.68rem;font-weight:800;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
+.scenario-label::before{content:'🏢';font-size:.85rem}
+.scenario-text{font-size:.92rem;color:var(--text-primary);line-height:1.6}
+
+/* Viz container */
+.viz-container{background:#FAFAFA;border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.viz-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
+.viz-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--navy);display:flex;align-items:center;gap:.5rem}
+.viz-title-dot{width:8px;height:8px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
+.viz-btn{padding:.55rem 1.1rem;border-radius:8px;border:1.5px solid var(--orange);background:var(--orange);color:#fff;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+.viz-btn:hover{background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.viz-btn.secondary{background:transparent;color:var(--orange)}
+.viz-btn.secondary:hover{background:var(--orange-glow);color:var(--orange-dark)}
+.viz-btn-group{display:flex;gap:.4rem;flex-wrap:wrap}
+.viz-btn-mini{padding:.45rem .85rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s}
+.viz-btn-mini:hover{border-color:var(--orange);color:var(--orange)}
+.viz-btn-mini.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+
+/* Steps */
+.steps-indicator{display:flex;gap:.4rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.step-dot{padding:.35rem .85rem;border-radius:50px;font-size:.7rem;font-weight:600;background:var(--bg-card);border:1.5px solid var(--border);color:var(--text-muted);transition:all .3s}
+.step-dot.active{background:var(--orange);color:#fff;border-color:var(--orange);transform:scale(1.05)}
+.step-dot.done{background:var(--green-light);color:var(--green);border-color:var(--green)}
+
+/* Explainer */
+.step-explainer{background:var(--bg-card);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.2rem;border:1px solid var(--border);min-height:60px;transition:all .3s}
+.step-explainer-label{font-size:.65rem;font-weight:800;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.step-explainer-text{font-size:.92rem;color:var(--text-primary);line-height:1.55}
+.step-explainer-text code{font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px;font-size:.85rem}
+
+/* Stage */
+.stage{background:#fff;border:1px dashed var(--border);border-radius:var(--radius-sm);min-height:340px;position:relative;overflow:hidden;padding:1.5rem;display:flex;align-items:center;justify-content:center}
+
+/* ─── DATA TABLE (shared) ─── */
+.dtable{display:inline-block;background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);font-family:'JetBrains Mono',monospace;font-size:.78rem}
+.dtable-row{display:flex;transition:all .5s ease}
+.dtable-row.header{background:var(--navy-dark);color:#fff;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}
+.dtable-row:not(.header):nth-child(even){background:var(--bg-light)}
+.dtable-row.fade-out{opacity:.15;transform:translateX(-12px)}
+.dtable-row.drop-out{opacity:0;transform:scale(0.9);max-height:0;padding:0!important}
+.dtable-row.dup-highlight{background:#FFE8C2!important;outline:2px solid var(--orange);outline-offset:-2px;z-index:1;position:relative}
+.dtable-row.dup-keep{background:var(--green-light)!important;outline:2px solid var(--green);outline-offset:-2px}
+.dtable-row.dup-drop{background:var(--red-light)!important;outline:2px dashed var(--red);outline-offset:-2px;opacity:.6}
+.dtable-cell{padding:.55rem .8rem;border-right:1px solid var(--border);min-width:90px;display:flex;align-items:center;justify-content:center;transition:all .4s ease;position:relative}
+.dtable-row:not(.header) .dtable-cell{color:var(--navy)}
+.dtable-cell:last-child{border-right:none}
+.dtable-cell.nan{background:#FFEDED;color:var(--red);font-weight:700;font-style:italic}
+.dtable-cell.filled{background:var(--green-light);color:var(--green);font-weight:700;animation:fillPop .5s ease}
+.dtable-cell.highlight{background:var(--orange-glow);color:var(--orange-dark);font-weight:700}
+.dtable-cell.flash{animation:flash 0.8s ease}
+@keyframes flash{0%,100%{background:transparent}50%{background:var(--orange-glow)}}
+@keyframes fillPop{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+
+/* Missing value strategy badges */
+.mv-strategies{display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.mv-strat{padding:.5rem 1rem;border-radius:8px;border:1.5px dashed var(--border);background:var(--bg-card);font-size:.78rem;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:.4rem}
+.mv-strat:hover{border-color:var(--orange);color:var(--orange)}
+.mv-strat.active{background:var(--orange);color:#fff;border-color:var(--orange);border-style:solid}
+.mv-strat-icon{font-size:1rem}
+
+/* ─── TYPE CONVERSION ─── */
+.tc-wrap{display:flex;flex-direction:column;align-items:center;gap:1.2rem;width:100%}
+.tc-pipeline{display:flex;align-items:center;justify-content:center;gap:.8rem;flex-wrap:wrap;width:100%}
+.tc-cell{padding:.7rem 1.1rem;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem;color:var(--navy);min-width:100px;text-align:center;transition:all .5s ease;position:relative}
+.tc-cell.input{color:var(--red);border-color:var(--red);background:var(--red-light)}
+.tc-cell.intermediate{color:var(--orange-dark);border-color:var(--orange);background:var(--orange-glow);animation:fillPop .5s ease}
+.tc-cell.output{color:var(--green);border-color:var(--green);background:var(--green-light);animation:fillPop .5s ease}
+.tc-cell-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif}
+.tc-arrow{font-size:1.2rem;color:var(--orange);font-weight:bold;opacity:0;transition:opacity .4s}
+.tc-arrow.visible{opacity:1}
+.tc-op{padding:.35rem .7rem;background:var(--navy-dark);color:#fff;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;opacity:0;transform:translateY(-6px);transition:all .4s}
+.tc-op.visible{opacity:1;transform:translateY(0)}
+.tc-type-pill{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .55rem;border-radius:50px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:.5rem}
+.tc-type-str{background:rgba(231,76,60,0.1);color:var(--red)}
+.tc-type-int{background:rgba(76,175,80,0.1);color:var(--green)}
+
+/* ─── DATE PARSING ─── */
+.dp-wrap{display:flex;flex-direction:column;align-items:center;gap:1.5rem;width:100%}
+.dp-row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;justify-content:center}
+.dp-raw{padding:.7rem 1.1rem;background:var(--red-light);border:2px solid var(--red);border-radius:10px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--red)}
+.dp-parsed-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem}
+.dp-component{padding:.5rem .8rem;background:var(--bg-card);border:2px solid var(--border);border-radius:8px;text-align:center;min-width:75px;opacity:0;transform:translateY(8px);transition:all .4s}
+.dp-component.visible{opacity:1;transform:translateY(0);border-color:var(--green);background:var(--green-light)}
+.dp-component-label{font-size:.6rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem;font-family:'Plus Jakarta Sans',sans-serif}
+.dp-component-value{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:var(--navy)}
+.dp-component.visible .dp-component-value{color:var(--green)}
+
+/* ─── STRING CLEANING ─── */
+.sc-wrap{display:flex;flex-direction:column;gap:1rem;width:100%;align-items:center}
+.sc-row{display:flex;align-items:center;gap:.7rem;width:100%;justify-content:center;flex-wrap:wrap}
+.sc-input{padding:.6rem 1rem;background:var(--red-light);border:1.5px solid var(--red);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--red);min-width:170px;text-align:center;font-weight:600;transition:all .5s ease;position:relative}
+.sc-input .ws-marker{display:inline;color:var(--orange);font-weight:900;opacity:.7;letter-spacing:1px}
+.sc-input.cleaning{background:var(--orange-glow);border-color:var(--orange);color:var(--orange-dark)}
+.sc-input.done{background:var(--green-light);border-color:var(--green);color:var(--navy)}
+.sc-arrow-mini{font-size:1rem;color:var(--text-muted);transition:color .3s}
+.sc-arrow-mini.active{color:var(--orange)}
+.sc-ops{display:flex;gap:.4rem;justify-content:center;margin-bottom:.8rem;flex-wrap:wrap}
+.sc-op{padding:.35rem .8rem;background:var(--bg-card);border:1.5px solid var(--border);border-radius:50px;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;color:var(--text-muted);transition:all .35s}
+.sc-op.active{background:var(--orange);color:#fff;border-color:var(--orange);transform:scale(1.05)}
+.sc-op.done{background:var(--green-light);color:var(--green);border-color:var(--green)}
+
+/* Code blocks */
+.code-block{background:#1a1b2e;border-radius:var(--radius);padding:1.4rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.7;color:#E8E8F0;overflow-x:auto;position:relative;margin-bottom:1rem}
+.code-header{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-dot{width:11px;height:11px;border-radius:50%}.code-dot.r{background:#FF5F57}.code-dot.y{background:#FEBC2E}.code-dot.g{background:#28C840}
+.code-filename{margin-left:.6rem;font-size:.72rem;color:rgba(255,255,255,0.5);font-family:'JetBrains Mono',monospace}
+.code-keyword{color:#FF7B72}.code-string{color:#A5D6FF}.code-num{color:#79C0FF}.code-fn{color:#D2A8FF}.code-comment{color:#8B949E;font-style:italic}.code-var{color:#79C0FF}.code-builtin{color:#FFA657}
+
+.output-block{background:#0d1117;border-radius:var(--radius);padding:1.2rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#7EE787;border:1px solid rgba(126,231,135,0.2);position:relative;overflow-x:auto;white-space:pre}
+.output-label{font-size:.65rem;color:var(--text-muted);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.output-label::before{content:'▶';color:var(--green);font-size:.6rem}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
+
+/* Takeaway */
+.takeaway{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border-radius:var(--radius);padding:1.5rem 1.8rem;margin-top:1.5rem;position:relative;overflow:hidden}
+.takeaway::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(232,122,46,0.15)}
+.takeaway-label{font-size:.7rem;font-weight:800;color:var(--orange-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;position:relative}
+.takeaway-text{font-size:.95rem;line-height:1.6;color:rgba(255,255,255,0.95);position:relative}
+.takeaway-text strong{color:var(--orange-light)}
+
+/* Footer */
+footer{background:var(--navy-dark);color:#fff;padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:800px;margin:0 auto}
+.footer-title{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:.5rem}
+.footer-title em{color:var(--orange);font-style:normal}
+.footer-sub{color:rgba(255,255,255,0.6);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem}
+.footer-nav{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.footer-nav a{padding:.5rem 1.1rem;background:rgba(255,255,255,0.06);color:#fff;text-decoration:none;border-radius:8px;font-size:.82rem;font-weight:500;transition:all .2s;border:1px solid rgba(255,255,255,0.08)}
+.footer-nav a:hover{background:var(--orange);border-color:var(--orange);transform:translateY(-2px)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(0.9)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+@media(max-width:760px){
+  .topbar{padding:0 1rem;height:60px}
+  .topbar-logo{height:40px}
+  .topbar-title{font-size:.95rem}
+  .hero{padding:2.5rem 1.2rem 2rem}
+  .lesson{padding:2.5rem 1.2rem}
+  .lesson-header{flex-direction:column;gap:1rem}
+  .lesson-num{width:52px;height:52px;font-size:1.5rem}
+  .viz-container{padding:1.2rem}
+  .stage{padding:1rem;min-height:280px}
+  .two-col{grid-template-columns:1fr}
+  .dp-parsed-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-title-wrap">
+      <span class="topbar-eyebrow">Lesson 03 · Foundations</span>
+      <span class="topbar-title">Data Cleaning Essentials</span>
+    </div>
+  </div>
+  <img src="hero.svg" alt="MokshPath Logo" class="topbar-logo">
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-shape hero-shape-1"></div>
+  <div class="hero-shape hero-shape-2"></div>
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span>Lesson 03 · Hands-on Walkthrough</div>
+    <h1>Real-world data is <em>messy</em>. Clean it like a pro.</h1>
+    <p class="hero-sub">Before any analysis, model, or dashboard — data has to be cleaned. This lesson walks through the five most common cleaning patterns every data professional uses, with step-by-step animations on actual industry datasets.</p>
+    <div class="topic-pills">
+      <a class="topic-pill" href="#missing"><span class="num">1</span>Missing Values</a>
+      <a class="topic-pill" href="#dupes"><span class="num">2</span>Duplicates</a>
+      <a class="topic-pill" href="#types"><span class="num">3</span>Type Conversion</a>
+      <a class="topic-pill" href="#dates"><span class="num">4</span>Date Parsing</a>
+      <a class="topic-pill" href="#strings"><span class="num">5</span>String Cleaning</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LESSON 1: MISSING VALUES ═══════════════════════ -->
+<section class="lesson" id="missing">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">1</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Empty-Cell Problem</div>
+        <h2 class="lesson-title">Missing Values — Decide before you analyse</h2>
+        <p class="lesson-sub">Real datasets always have gaps. A customer didn't fill in their age, a sensor missed a reading, an export failed mid-file. These show up as <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">NaN</code> (Not a Number). You have three main strategies — and choosing the right one matters.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">You're analysing a Flipkart customer table. Some rows are missing the customer's <strong>age</strong> or last <strong>purchase amount</strong>. You need to decide: drop those customers, or fill in the gaps so the totals still make sense.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Pick a strategy &mdash; watch it apply</div>
+        <button class="viz-btn secondary" onclick="resetMV()">↻ Reset</button>
+      </div>
+      <div class="mv-strategies">
+        <button class="mv-strat" onclick="applyMV('drop')"><span class="mv-strat-icon">🗑️</span> dropna() — drop rows</button>
+        <button class="mv-strat" onclick="applyMV('mean')"><span class="mv-strat-icon">📊</span> fillna(mean) — fill with average</button>
+        <button class="mv-strat" onclick="applyMV('ffill')"><span class="mv-strat-icon">⤵️</span> ffill() — forward-fill</button>
+      </div>
+      <div class="step-explainer" id="mvExplain">
+        <div class="step-explainer-label">Ready</div>
+        <div class="step-explainer-text">Three rows below have missing values (the red <code>NaN</code> cells). Click any strategy above to see how it transforms the table — and the trade-off it makes.</div>
+      </div>
+      <div class="stage" style="min-height:300px">
+        <div class="dtable" id="mvTable">
+          <div class="dtable-row header">
+            <div class="dtable-cell">customer_id</div>
+            <div class="dtable-cell">city</div>
+            <div class="dtable-cell">age</div>
+            <div class="dtable-cell">last_amt</div>
+          </div>
+          <div class="dtable-row" id="mv-r0">
+            <div class="dtable-cell">C001</div>
+            <div class="dtable-cell">Mumbai</div>
+            <div class="dtable-cell" data-orig="32">32</div>
+            <div class="dtable-cell" data-orig="450">450</div>
+          </div>
+          <div class="dtable-row" id="mv-r1">
+            <div class="dtable-cell">C002</div>
+            <div class="dtable-cell">Pune</div>
+            <div class="dtable-cell nan" data-orig="NaN">NaN</div>
+            <div class="dtable-cell" data-orig="820">820</div>
+          </div>
+          <div class="dtable-row" id="mv-r2">
+            <div class="dtable-cell">C003</div>
+            <div class="dtable-cell">Delhi</div>
+            <div class="dtable-cell" data-orig="41">41</div>
+            <div class="dtable-cell nan" data-orig="NaN">NaN</div>
+          </div>
+          <div class="dtable-row" id="mv-r3">
+            <div class="dtable-cell">C004</div>
+            <div class="dtable-cell">Bangalore</div>
+            <div class="dtable-cell" data-orig="28">28</div>
+            <div class="dtable-cell" data-orig="1200">1200</div>
+          </div>
+          <div class="dtable-row" id="mv-r4">
+            <div class="dtable-cell">C005</div>
+            <div class="dtable-cell">Chennai</div>
+            <div class="dtable-cell nan" data-orig="NaN">NaN</div>
+            <div class="dtable-cell nan" data-orig="NaN">NaN</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">clean.py</span></div>
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+
+df = pd.<span class="code-fn">read_csv</span>(<span class="code-string">'customers.csv'</span>)
+
+<span class="code-comment"># Strategy 1 — drop rows with any NaN</span>
+df1 = df.<span class="code-fn">dropna</span>()
+
+<span class="code-comment"># Strategy 2 — fill numeric NaN with the column mean</span>
+df2 = df.<span class="code-fn">fillna</span>({
+    <span class="code-string">'age'</span>: df[<span class="code-string">'age'</span>].<span class="code-fn">mean</span>(),
+    <span class="code-string">'last_amt'</span>: df[<span class="code-string">'last_amt'</span>].<span class="code-fn">mean</span>()
+})
+
+<span class="code-comment"># Strategy 3 — forward-fill (use previous row's value)</span>
+df3 = df.<span class="code-fn">ffill</span>()
+      </div>
+      <div>
+        <div class="output-label">When to use what</div>
+        <div class="output-block" style="white-space:normal;line-height:1.6;color:#d8d8e0">
+<span style="color:#7EE787">▸ dropna()</span>  — safest when only a few rows are missing and you have plenty of data. <strong style="color:#FFA657">Risk:</strong> losing too many rows.
+<br><br>
+<span style="color:#7EE787">▸ fillna(mean)</span> — good for symmetric numeric data. <strong style="color:#FFA657">Risk:</strong> shrinks variance, blurs outliers.
+<br><br>
+<span style="color:#7EE787">▸ ffill()</span> — perfect for time-series (yesterday's price is a fair guess for today). <strong style="color:#FFA657">Risk:</strong> not valid for unordered data.
+        </div>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key takeaway</div>
+      <div class="takeaway-text">Missing values are <strong>decisions, not bugs</strong>. The wrong strategy can mislead an entire dashboard — drop too much and you lose signal, fill carelessly and you invent it. Always inspect <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">df.isna().sum()</code> before deciding.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LESSON 2: DUPLICATES ═══════════════════════ -->
+<section class="lesson" id="dupes">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">2</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Twin Problem</div>
+        <h2 class="lesson-title">Duplicate Detection — Catch the same record twice</h2>
+        <p class="lesson-sub">A user signed up twice. A sales rep accidentally double-entered an order. A CSV got merged with itself. Duplicates inflate metrics and skew models. Pandas gives you fine-grained control over how "duplicate" is defined.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">You're cleaning a marketing email list for Swiggy. Some customers appear with the same <strong>email</strong> but different <strong>signup dates</strong> — you want to keep only the most recent signup per email.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Find &amp; remove duplicates step by step</div>
+        <button class="viz-btn" onclick="playDupes()">▶ Play Animation</button>
+      </div>
+      <div class="steps-indicator" id="dupSteps">
+        <span class="step-dot" id="dup-s0">1. Scan</span>
+        <span class="step-dot" id="dup-s1">2. Compare emails</span>
+        <span class="step-dot" id="dup-s2">3. Keep latest</span>
+        <span class="step-dot" id="dup-s3">4. Drop earlier</span>
+      </div>
+      <div class="step-explainer" id="dupExplain">
+        <div class="step-explainer-label">Ready</div>
+        <div class="step-explainer-text">Press <strong>Play Animation</strong> to scan the table for duplicate emails. We'll highlight matches, then drop the older signup of each pair.</div>
+      </div>
+      <div class="stage" style="min-height:340px">
+        <div class="dtable" id="dupTable">
+          <div class="dtable-row header">
+            <div class="dtable-cell" style="min-width:55px">id</div>
+            <div class="dtable-cell" style="min-width:160px">email</div>
+            <div class="dtable-cell" style="min-width:90px">name</div>
+            <div class="dtable-cell" style="min-width:110px">signup_date</div>
+          </div>
+          <div class="dtable-row" id="dup-r0">
+            <div class="dtable-cell" style="min-width:55px">1</div>
+            <div class="dtable-cell" style="min-width:160px">asha@gmail.com</div>
+            <div class="dtable-cell" style="min-width:90px">Asha</div>
+            <div class="dtable-cell" style="min-width:110px">2024-01-15</div>
+          </div>
+          <div class="dtable-row" id="dup-r1">
+            <div class="dtable-cell" style="min-width:55px">2</div>
+            <div class="dtable-cell" style="min-width:160px">rohit@yahoo.com</div>
+            <div class="dtable-cell" style="min-width:90px">Rohit</div>
+            <div class="dtable-cell" style="min-width:110px">2024-02-03</div>
+          </div>
+          <div class="dtable-row" id="dup-r2">
+            <div class="dtable-cell" style="min-width:55px">3</div>
+            <div class="dtable-cell" style="min-width:160px">asha@gmail.com</div>
+            <div class="dtable-cell" style="min-width:90px">Asha S.</div>
+            <div class="dtable-cell" style="min-width:110px">2024-05-20</div>
+          </div>
+          <div class="dtable-row" id="dup-r3">
+            <div class="dtable-cell" style="min-width:55px">4</div>
+            <div class="dtable-cell" style="min-width:160px">priya@gmail.com</div>
+            <div class="dtable-cell" style="min-width:90px">Priya</div>
+            <div class="dtable-cell" style="min-width:110px">2024-03-10</div>
+          </div>
+          <div class="dtable-row" id="dup-r4">
+            <div class="dtable-cell" style="min-width:55px">5</div>
+            <div class="dtable-cell" style="min-width:160px">rohit@yahoo.com</div>
+            <div class="dtable-cell" style="min-width:90px">R. Kumar</div>
+            <div class="dtable-cell" style="min-width:110px">2024-06-12</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">dedupe.py</span></div>
+<span class="code-comment"># Find duplicates (exact match across ALL columns)</span>
+df.<span class="code-fn">duplicated</span>().<span class="code-fn">sum</span>()
+
+<span class="code-comment"># Find duplicates by a SUBSET of columns</span>
+df.<span class="code-fn">duplicated</span>(subset=[<span class="code-string">'email'</span>]).<span class="code-fn">sum</span>()
+
+<span class="code-comment"># Drop duplicates — keep the LATEST signup per email</span>
+df_clean = (
+    df.<span class="code-fn">sort_values</span>(<span class="code-string">'signup_date'</span>)
+      .<span class="code-fn">drop_duplicates</span>(
+          subset=[<span class="code-string">'email'</span>],
+          keep=<span class="code-string">'last'</span>
+      )
+)
+      </div>
+      <div class="output-block">
+<span style="color:#9597A6">Before:</span>  5 rows
+<span style="color:#9597A6">Duplicates on email:</span>  2
+
+<span style="color:#7EE787">After cleanup → 3 rows</span>
+  ✓ asha@gmail.com  (2024-05-20)
+  ✓ priya@gmail.com (2024-03-10)
+  ✓ rohit@yahoo.com (2024-06-12)
+
+<span style="color:#FFA657">Dropped:</span>
+  ✗ id=1  asha@gmail.com  (older)
+  ✗ id=2  rohit@yahoo.com (older)
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key takeaway</div>
+      <div class="takeaway-text">"Duplicate" is a <strong>business question, not a technical one</strong>. Same row? Same email? Same name+phone? Define it explicitly with <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">subset=</code> and decide whether to keep the first, last, or aggregate them.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LESSON 3: TYPE CONVERSION ═══════════════════════ -->
+<section class="lesson" id="types">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">3</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Wrong-Dressed Data</div>
+        <h2 class="lesson-title">Type Conversion — Numbers stuck inside strings</h2>
+        <p class="lesson-sub">A price column shows <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">"₹1,500"</code> — looks like a number, but Python sees it as text. You can't sum it, you can't average it, you can't plot it. This lesson shows the cleanup pipeline that turns text-shaped numbers into real numbers.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A finance team exported a sales report from SAP where the <strong>amount</strong> column was saved as text — complete with currency symbols and comma separators. You need to turn it into a numeric column you can sum and average.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch text become a number, step by step</div>
+        <button class="viz-btn" onclick="playTC()">▶ Play Animation</button>
+      </div>
+      <div class="steps-indicator">
+        <span class="step-dot" id="tc-s0">1. Raw text</span>
+        <span class="step-dot" id="tc-s1">2. Strip ₹</span>
+        <span class="step-dot" id="tc-s2">3. Remove ,</span>
+        <span class="step-dot" id="tc-s3">4. Cast to float</span>
+      </div>
+      <div class="step-explainer" id="tcExplain">
+        <div class="step-explainer-label">Ready</div>
+        <div class="step-explainer-text">The value <code>"₹1,500"</code> looks like a number, but its type is <code>str</code>. Watch each character get peeled away until only the digits remain, then a final cast turns them into a real <code>float</code>.</div>
+      </div>
+      <div class="stage" style="min-height:300px;padding:2.5rem 1.5rem">
+        <div class="tc-wrap">
+          <div class="tc-pipeline" id="tcPipeline">
+            <div class="tc-cell input" id="tc-cell-0">"₹1,500"
+              <div class="tc-cell-label" style="color:var(--red)">type: str</div>
+            </div>
+            <div class="tc-arrow" id="tc-a0">→</div>
+            <div class="tc-op" id="tc-op0">.replace("₹","")</div>
+            <div class="tc-cell" id="tc-cell-1" style="visibility:hidden">"1,500"
+              <div class="tc-cell-label">type: str</div>
+            </div>
+          </div>
+          <div class="tc-pipeline" id="tcPipeline2" style="margin-top:1rem">
+            <div class="tc-op" id="tc-op1">.replace(",","")</div>
+            <div class="tc-cell" id="tc-cell-2" style="visibility:hidden">"1500"
+              <div class="tc-cell-label">type: str</div>
+            </div>
+            <div class="tc-arrow" id="tc-a2">→</div>
+            <div class="tc-op" id="tc-op2">float()</div>
+            <div class="tc-cell" id="tc-cell-3" style="visibility:hidden">1500.0
+              <div class="tc-cell-label" style="color:var(--green)">type: float ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">convert_types.py</span></div>
+<span class="code-comment"># Before: amount column dtype is 'object' (text)</span>
+df[<span class="code-string">'amount'</span>].dtype
+<span class="code-comment"># → dtype('O')</span>
+
+<span class="code-comment"># Chain string methods, then cast</span>
+df[<span class="code-string">'amount'</span>] = (
+    df[<span class="code-string">'amount'</span>]
+      .<span class="code-fn">str</span>.<span class="code-fn">replace</span>(<span class="code-string">'₹'</span>, <span class="code-string">''</span>)
+      .<span class="code-fn">str</span>.<span class="code-fn">replace</span>(<span class="code-string">','</span>, <span class="code-string">''</span>)
+      .<span class="code-fn">astype</span>(<span class="code-builtin">float</span>)
+)
+
+<span class="code-comment"># For safety against junk values, use pd.to_numeric</span>
+df[<span class="code-string">'amount'</span>] = pd.<span class="code-fn">to_numeric</span>(
+    df[<span class="code-string">'amount'</span>], errors=<span class="code-string">'coerce'</span>
+)
+      </div>
+      <div class="output-block">
+<span style="color:#9597A6">df.dtypes  (before)</span>
+  customer_id    object
+  amount         object   ← problem!
+  date           object
+
+<span style="color:#7EE787">df.dtypes  (after)</span>
+  customer_id    object
+  amount         float64  ✓
+  date           object
+
+<span style="color:#FFA657">Now you can:</span>
+  df['amount'].<span style="color:#D2A8FF">sum</span>()      → 4,820.0
+  df['amount'].<span style="color:#D2A8FF">mean</span>()     → 964.0
+  df['amount'].<span style="color:#D2A8FF">plot</span>()     ✓
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key takeaway</div>
+      <div class="takeaway-text">Always check <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">df.dtypes</code> early. If a column you expect to be numeric shows as <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">object</code>, something is hiding in there — currency symbols, commas, stray spaces. Use <strong>pd.to_numeric(errors='coerce')</strong> to gracefully convert and turn unparseable values into NaN (which you then handle with strategy 1).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LESSON 4: DATE PARSING ═══════════════════════ -->
+<section class="lesson" id="dates">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">4</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Time Decoder</div>
+        <h2 class="lesson-title">Date Parsing — Unlock the calendar inside a string</h2>
+        <p class="lesson-sub">Dates often arrive as plain text — <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">"2024-03-15"</code> or <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">"15/03/2024"</code>. Parse them into proper datetime objects and you unlock filtering by month, day-of-week, time-of-day — the entire calendar.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">An e-commerce team wants to know: <em>Which day of the week brings the most orders?</em> The dataset has a <strong>transaction_date</strong> column as text. Until you parse it to datetime, you can't extract weekday, group by month, or chart trends.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>One date string &mdash; six useful components</div>
+        <button class="viz-btn" onclick="playDP()">▶ Play Animation</button>
+      </div>
+      <div class="steps-indicator">
+        <span class="step-dot" id="dp-s0">1. Raw string</span>
+        <span class="step-dot" id="dp-s1">2. Parse</span>
+        <span class="step-dot" id="dp-s2">3. Extract parts</span>
+      </div>
+      <div class="step-explainer" id="dpExplain">
+        <div class="step-explainer-label">Ready</div>
+        <div class="step-explainer-text">A single date string carries six pieces of information you can pivot on. Watch them get unlocked one by one.</div>
+      </div>
+      <div class="stage" style="min-height:340px;padding:2rem 1.5rem">
+        <div class="dp-wrap">
+          <div class="dp-row">
+            <div class="dp-raw" id="dpRaw">"2024-03-15"</div>
+            <div class="tc-arrow" id="dpArrow">→</div>
+            <div class="tc-op" id="dpOp" style="opacity:0">pd.to_datetime()</div>
+            <div class="dp-raw" id="dpParsed" style="background:var(--green-light);border-color:var(--green);color:var(--green);opacity:0;transition:opacity .5s">2024-03-15 00:00:00</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:.5rem">↓ Now you can access every part</div>
+          <div class="dp-parsed-grid" id="dpGrid">
+            <div class="dp-component" id="dp-c0">
+              <div class="dp-component-label">.year</div>
+              <div class="dp-component-value">2024</div>
+            </div>
+            <div class="dp-component" id="dp-c1">
+              <div class="dp-component-label">.month</div>
+              <div class="dp-component-value">3</div>
+            </div>
+            <div class="dp-component" id="dp-c2">
+              <div class="dp-component-label">.day</div>
+              <div class="dp-component-value">15</div>
+            </div>
+            <div class="dp-component" id="dp-c3">
+              <div class="dp-component-label">.day_name</div>
+              <div class="dp-component-value">Friday</div>
+            </div>
+            <div class="dp-component" id="dp-c4">
+              <div class="dp-component-label">.quarter</div>
+              <div class="dp-component-value">Q1</div>
+            </div>
+            <div class="dp-component" id="dp-c5">
+              <div class="dp-component-label">.week</div>
+              <div class="dp-component-value">11</div>
+            </div>
+            <div class="dp-component" id="dp-c6">
+              <div class="dp-component-label">.is_weekend</div>
+              <div class="dp-component-value">False</div>
+            </div>
+            <div class="dp-component" id="dp-c7">
+              <div class="dp-component-label">days_since</div>
+              <div class="dp-component-value">434</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">dates.py</span></div>
+<span class="code-comment"># Parse the column (handles many formats automatically)</span>
+df[<span class="code-string">'date'</span>] = pd.<span class="code-fn">to_datetime</span>(
+    df[<span class="code-string">'date'</span>],
+    errors=<span class="code-string">'coerce'</span>
+)
+
+<span class="code-comment"># Now extract anything you need</span>
+df[<span class="code-string">'year'</span>]      = df[<span class="code-string">'date'</span>].dt.year
+df[<span class="code-string">'month'</span>]     = df[<span class="code-string">'date'</span>].dt.month
+df[<span class="code-string">'weekday'</span>]   = df[<span class="code-string">'date'</span>].dt.day_name()
+df[<span class="code-string">'quarter'</span>]   = df[<span class="code-string">'date'</span>].dt.quarter
+df[<span class="code-string">'is_weekend'</span>] = df[<span class="code-string">'date'</span>].dt.dayofweek &gt;= <span class="code-num">5</span>
+
+<span class="code-comment"># Filter — much easier with proper dates</span>
+df_q1 = df[df[<span class="code-string">'date'</span>].dt.quarter == <span class="code-num">1</span>]
+df_recent = df[df[<span class="code-string">'date'</span>] &gt;= <span class="code-string">'2024-01-01'</span>]
+      </div>
+      <div class="output-block">
+<span style="color:#9597A6">"Which weekday brings the most orders?"</span>
+
+orders.groupby('weekday')['amt'].<span style="color:#D2A8FF">sum</span>()
+
+<span style="color:#7EE787">Saturday    ₹2,84,500  ★ peak</span>
+Sunday      ₹2,61,200
+Friday      ₹1,98,400
+Thursday    ₹1,52,300
+Wednesday   ₹1,41,800
+Monday      ₹1,38,600
+Tuesday     ₹1,29,100
+
+<span style="color:#FFA657">Insight:</span> Run weekend promotions.
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key takeaway</div>
+      <div class="takeaway-text">A parsed datetime column is the gateway to <strong>time-aware analysis</strong> — cohort retention, seasonality, day-of-week effects, year-over-year comparisons. Always parse dates early; never store them as plain strings in a working dataset.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LESSON 5: STRING CLEANING ═══════════════════════ -->
+<section class="lesson" id="strings">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">5</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Untidy Text</div>
+        <h2 class="lesson-title">String Cleaning — Same name, written six ways</h2>
+        <p class="lesson-sub">Customer-entered data is wild: <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">"  Asha SHARMA  "</code>, <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">"asha sharma"</code>, and <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">"ASHA  Sharma"</code> are all the same person — but a computer sees three different strings. A short cleaning pipeline normalises them.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A CRM team is trying to count unique customers but the same person appears with inconsistent spacing and capitalisation. After cleaning, <strong>three rows collapse into one customer</strong>.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch four operations clean the strings</div>
+        <button class="viz-btn" onclick="playSC()">▶ Play Animation</button>
+      </div>
+      <div class="steps-indicator">
+        <span class="step-dot" id="sc-s0">1. strip()</span>
+        <span class="step-dot" id="sc-s1">2. lower()</span>
+        <span class="step-dot" id="sc-s2">3. collapse spaces</span>
+        <span class="step-dot" id="sc-s3">4. title()</span>
+      </div>
+      <div class="step-explainer" id="scExplain">
+        <div class="step-explainer-label">Ready</div>
+        <div class="step-explainer-text">Three messy strings &mdash; same person. Watch each cleaning operation apply in sequence, until all three become identical.</div>
+      </div>
+      <div class="stage" style="min-height:320px;padding:2rem 1.5rem">
+        <div class="sc-wrap">
+          <div class="sc-ops">
+            <span class="sc-op" id="sc-op0">.str.strip()</span>
+            <span class="sc-op" id="sc-op1">.str.lower()</span>
+            <span class="sc-op" id="sc-op2">.replace(r'\s+', ' ')</span>
+            <span class="sc-op" id="sc-op3">.str.title()</span>
+          </div>
+          <div class="sc-row">
+            <div class="sc-input" id="sc-i0"><span class="ws-marker">··</span>Asha SHARMA<span class="ws-marker">··</span></div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-input" id="sc-i1">asha sharma</div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-input" id="sc-i2">ASHA<span class="ws-marker">··</span>Sharma</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">clean_strings.py</span></div>
+<span class="code-comment"># Chain all cleaning ops together</span>
+df[<span class="code-string">'name_clean'</span>] = (
+    df[<span class="code-string">'name'</span>]
+      .<span class="code-fn">str</span>.<span class="code-fn">strip</span>()
+      .<span class="code-fn">str</span>.<span class="code-fn">lower</span>()
+      .<span class="code-fn">str</span>.<span class="code-fn">replace</span>(
+          <span class="code-string">r'\s+'</span>, <span class="code-string">' '</span>, regex=<span class="code-keyword">True</span>
+      )
+      .<span class="code-fn">str</span>.<span class="code-fn">title</span>()
+)
+
+<span class="code-comment"># How many real unique customers?</span>
+df[<span class="code-string">'name'</span>].<span class="code-fn">nunique</span>()        <span class="code-comment"># 3 (raw)</span>
+df[<span class="code-string">'name_clean'</span>].<span class="code-fn">nunique</span>()  <span class="code-comment"># 1 (cleaned!)</span>
+      </div>
+      <div class="output-block">
+<span style="color:#9597A6">BEFORE cleaning  →  3 distinct values</span>
+  "  Asha SHARMA  "
+  "asha sharma"
+  "ASHA  Sharma"
+
+<span style="color:#7EE787">AFTER cleaning   →  1 unique customer</span>
+  "Asha Sharma"
+
+<span style="color:#FFA657">Business impact:</span>
+  Before: 3 separate customer profiles
+  After:  1 unified profile
+          Accurate revenue, accurate CRM.
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key takeaway</div>
+      <div class="takeaway-text">String cleaning is the difference between <strong>"3 customers worth ₹500 each"</strong> and <strong>"1 customer worth ₹1,500"</strong>. The chain <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">strip → lower → collapse spaces → title</code> handles 90% of customer-entered data. Build it once, apply it to every text column.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">Moksh<em>Path</em></div>
+    <p class="footer-sub">Five cleaning patterns. Every dataset you'll ever touch. Master these and the rest of data work becomes much easier.</p>
+    <nav class="footer-nav">
+      <a href="01-python-review.html">← Lesson 01 · Python Review</a>
+      <a href="02-pandas-essentials.html">Lesson 02 · Pandas Essentials</a>
+      <a href="04-numpy-aggregation.html">Lesson 04 · NumPy Aggregation →</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ─── LESSON 1: MISSING VALUES ─── */
+function resetMV() {
+  const tbl = document.getElementById('mvTable');
+  tbl.querySelectorAll('.dtable-row').forEach(r => {
+    r.classList.remove('drop-out', 'fade-out');
+    r.style.maxHeight = '';
+    r.querySelectorAll('.dtable-cell').forEach(c => {
+      const orig = c.getAttribute('data-orig');
+      if (orig !== null) {
+        c.textContent = orig;
+        c.classList.remove('filled', 'highlight', 'flash');
+        if (orig === 'NaN') c.classList.add('nan');
+        else c.classList.remove('nan');
+      }
+    });
+  });
+  document.querySelectorAll('.mv-strat').forEach(b => b.classList.remove('active'));
+  document.getElementById('mvExplain').innerHTML = `<div class="step-explainer-label">Ready</div><div class="step-explainer-text">Three rows below have missing values (the red <code>NaN</code> cells). Click any strategy above to see how it transforms the table — and the trade-off it makes.</div>`;
+}
+
+async function applyMV(kind) {
+  resetMV();
+  const btns = document.querySelectorAll('.mv-strat');
+  btns.forEach(b => b.classList.remove('active'));
+  const idx = {drop:0, mean:1, ffill:2}[kind];
+  btns[idx].classList.add('active');
+  const exp = document.getElementById('mvExplain');
+
+  if (kind === 'drop') {
+    exp.innerHTML = `<div class="step-explainer-label">Step 1 · Identify rows with any NaN</div><div class="step-explainer-text">Highlighting rows 2, 3 and 5 — each has at least one missing cell.</div>`;
+    ['mv-r1','mv-r2','mv-r4'].forEach(id => document.getElementById(id).classList.add('fade-out'));
+    await sleep(1500);
+    exp.innerHTML = `<div class="step-explainer-label">Step 2 · Drop them</div><div class="step-explainer-text">Those three rows are removed. We lose 60% of the table — fine if you have millions of rows, dangerous if you have hundreds.</div>`;
+    ['mv-r1','mv-r2','mv-r4'].forEach(id => {
+      const row = document.getElementById(id);
+      row.classList.add('drop-out');
+      row.style.maxHeight = '0';
+      row.style.padding = '0';
+    });
+    await sleep(1400);
+    exp.innerHTML = `<div class="step-explainer-label">Done · 2 rows survive</div><div class="step-explainer-text"><strong>dropna()</strong> is fast and safe — but irreversible. Make sure you can afford to lose those rows before using it.</div>`;
+  }
+  else if (kind === 'mean') {
+    exp.innerHTML = `<div class="step-explainer-label">Step 1 · Calculate column means</div><div class="step-explainer-text">Mean age (from existing values 32, 41, 28) = <strong>33.7</strong>. Mean amount = <strong>823.3</strong>.</div>`;
+    await sleep(1500);
+    exp.innerHTML = `<div class="step-explainer-label">Step 2 · Fill every NaN</div><div class="step-explainer-text">Replace each missing cell with the column's mean. Every row survives.</div>`;
+    const fills = [
+      {id:'mv-r1', col:2, val:'33.7'},
+      {id:'mv-r2', col:3, val:'823.3'},
+      {id:'mv-r4', col:2, val:'33.7'},
+      {id:'mv-r4', col:3, val:'823.3'}
+    ];
+    for (const f of fills) {
+      const cells = document.getElementById(f.id).querySelectorAll('.dtable-cell');
+      cells[f.col].textContent = f.val;
+      cells[f.col].classList.remove('nan');
+      cells[f.col].classList.add('filled');
+      await sleep(500);
+    }
+    exp.innerHTML = `<div class="step-explainer-label">Done · All rows preserved</div><div class="step-explainer-text"><strong>fillna(mean)</strong> keeps every row, but every imputed value is the same. The data's spread (variance) shrinks slightly.</div>`;
+  }
+  else if (kind === 'ffill') {
+    exp.innerHTML = `<div class="step-explainer-label">Step 1 · Look upward for each NaN</div><div class="step-explainer-text">For each empty cell, grab the value directly above it. Order matters here.</div>`;
+    await sleep(1200);
+    const fills = [
+      {id:'mv-r1', col:2, val:'32', source:'C001'},
+      {id:'mv-r2', col:3, val:'820', source:'C002'},
+      {id:'mv-r4', col:2, val:'28', source:'C004'},
+      {id:'mv-r4', col:3, val:'1200', source:'C004'}
+    ];
+    for (const f of fills) {
+      exp.innerHTML = `<div class="step-explainer-label">Step 2 · Forward-fill row from ${f.source}</div><div class="step-explainer-text">Copy <strong>${f.val}</strong> down from the previous row. Useful when consecutive rows are similar (time-series, sensor data).</div>`;
+      const cells = document.getElementById(f.id).querySelectorAll('.dtable-cell');
+      cells[f.col].textContent = f.val;
+      cells[f.col].classList.remove('nan');
+      cells[f.col].classList.add('filled');
+      await sleep(750);
+    }
+    exp.innerHTML = `<div class="step-explainer-label">Done · Time-series-friendly fill</div><div class="step-explainer-text"><strong>ffill()</strong> assumes today's value resembles yesterday's. Perfect for stock prices, daily sales, or sensor readings — bad for unordered customer data.</div>`;
+  }
+}
+
+/* ─── LESSON 2: DUPLICATES ─── */
+async function playDupes() {
+  // reset
+  for (let i=0; i<5; i++) {
+    const r = document.getElementById('dup-r'+i);
+    r.classList.remove('dup-highlight','dup-keep','dup-drop','drop-out');
+    r.style.maxHeight = '';
+  }
+  document.querySelectorAll('#dupSteps .step-dot').forEach(d => d.classList.remove('active','done'));
+  const exp = document.getElementById('dupExplain');
+
+  document.getElementById('dup-s0').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 1 · Scan the table</div><div class="step-explainer-text">5 rows in total. We're looking for any rows where the <code>email</code> appears more than once.</div>`;
+  await sleep(1600);
+  document.getElementById('dup-s0').classList.replace('active','done');
+
+  document.getElementById('dup-s1').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 2 · Found two matches</div><div class="step-explainer-text"><strong>asha@gmail.com</strong> appears in rows 1 and 3. <strong>rohit@yahoo.com</strong> appears in rows 2 and 5.</div>`;
+  document.getElementById('dup-r0').classList.add('dup-highlight');
+  document.getElementById('dup-r2').classList.add('dup-highlight');
+  await sleep(800);
+  document.getElementById('dup-r1').classList.add('dup-highlight');
+  document.getElementById('dup-r4').classList.add('dup-highlight');
+  await sleep(1700);
+  document.getElementById('dup-s1').classList.replace('active','done');
+
+  document.getElementById('dup-s2').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 3 · Decide who to keep</div><div class="step-explainer-text">Sort by date, then <code>keep='last'</code> &mdash; we want the <strong>most recent signup</strong> per email. Rows 3 and 5 win.</div>`;
+  document.getElementById('dup-r0').classList.remove('dup-highlight');
+  document.getElementById('dup-r0').classList.add('dup-drop');
+  document.getElementById('dup-r2').classList.remove('dup-highlight');
+  document.getElementById('dup-r2').classList.add('dup-keep');
+  await sleep(700);
+  document.getElementById('dup-r1').classList.remove('dup-highlight');
+  document.getElementById('dup-r1').classList.add('dup-drop');
+  document.getElementById('dup-r4').classList.remove('dup-highlight');
+  document.getElementById('dup-r4').classList.add('dup-keep');
+  await sleep(1700);
+  document.getElementById('dup-s2').classList.replace('active','done');
+
+  document.getElementById('dup-s3').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 4 · Drop the older signups</div><div class="step-explainer-text">Rows 1 and 2 (the older copies) are removed. 3 clean rows remain.</div>`;
+  await sleep(900);
+  ['dup-r0','dup-r1'].forEach(id => {
+    const r = document.getElementById(id);
+    r.classList.add('drop-out');
+    r.style.maxHeight = '0';
+    r.style.padding = '0';
+  });
+  await sleep(1200);
+  document.getElementById('dup-s3').classList.replace('active','done');
+  exp.innerHTML = `<div class="step-explainer-label">Done · 3 unique customers</div><div class="step-explainer-text">From 5 rows down to <strong>3 real customers</strong>. Your conversion-rate maths is now honest.</div>`;
+}
+
+/* ─── LESSON 3: TYPE CONVERSION ─── */
+async function playTC() {
+  // reset
+  for (let i=0; i<4; i++) {
+    const c = document.getElementById('tc-cell-'+i);
+    c.style.visibility = (i===0?'visible':'hidden');
+    c.classList.remove('intermediate','output');
+    if (i>0) c.classList.remove('input');
+  }
+  document.getElementById('tc-cell-0').classList.add('input');
+  document.querySelectorAll('.tc-arrow,.tc-op').forEach(e => e.classList.remove('visible'));
+  document.querySelectorAll('#types .step-dot').forEach(d => d.classList.remove('active','done'));
+  const exp = document.getElementById('tcExplain');
+
+  document.getElementById('tc-s0').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 1 · Raw string</div><div class="step-explainer-text">The value <code>"₹1,500"</code> is stored as <strong>text</strong>. Python sees it as 6 characters: ₹, 1, comma, 5, 0, 0.</div>`;
+  await sleep(1500);
+  document.getElementById('tc-s0').classList.replace('active','done');
+
+  // step 1: strip ₹
+  document.getElementById('tc-s1').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 2 · Remove the rupee symbol</div><div class="step-explainer-text"><code>.str.replace('₹', '')</code> deletes every ₹ character — now the string is <code>"1,500"</code>. Still text.</div>`;
+  document.getElementById('tc-a0').classList.add('visible');
+  document.getElementById('tc-op0').classList.add('visible');
+  await sleep(700);
+  document.getElementById('tc-cell-1').style.visibility = 'visible';
+  document.getElementById('tc-cell-1').classList.add('intermediate');
+  await sleep(1400);
+  document.getElementById('tc-s1').classList.replace('active','done');
+
+  // step 2: strip comma
+  document.getElementById('tc-s2').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 3 · Remove the comma</div><div class="step-explainer-text"><code>.str.replace(',', '')</code> deletes the thousands separator. The string is now <code>"1500"</code> — but Python <strong>still sees it as text</strong>.</div>`;
+  document.getElementById('tc-op1').classList.add('visible');
+  await sleep(700);
+  document.getElementById('tc-cell-2').style.visibility = 'visible';
+  document.getElementById('tc-cell-2').classList.add('intermediate');
+  await sleep(1400);
+  document.getElementById('tc-s2').classList.replace('active','done');
+
+  // step 3: cast to float
+  document.getElementById('tc-s3').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 4 · Cast to a real number</div><div class="step-explainer-text"><code>.astype(float)</code> tells Python: "treat these digits as a number." Now you can sum, average, plot it.</div>`;
+  document.getElementById('tc-a2').classList.add('visible');
+  document.getElementById('tc-op2').classList.add('visible');
+  await sleep(700);
+  document.getElementById('tc-cell-3').style.visibility = 'visible';
+  document.getElementById('tc-cell-3').classList.add('output');
+  await sleep(1400);
+  document.getElementById('tc-s3').classList.replace('active','done');
+  exp.innerHTML = `<div class="step-explainer-label">Done · It's a float now</div><div class="step-explainer-text">From <code>"₹1,500"</code> (text) to <code>1500.0</code> (float). The whole column can be cleaned with one chained expression.</div>`;
+}
+
+/* ─── LESSON 4: DATE PARSING ─── */
+async function playDP() {
+  // reset
+  document.getElementById('dpParsed').style.opacity = '0';
+  document.getElementById('dpOp').classList.remove('visible');
+  document.getElementById('dpArrow').classList.remove('visible');
+  for (let i=0; i<8; i++) document.getElementById('dp-c'+i).classList.remove('visible');
+  document.querySelectorAll('#dates .step-dot').forEach(d => d.classList.remove('active','done'));
+  const exp = document.getElementById('dpExplain');
+
+  document.getElementById('dp-s0').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 1 · A plain text date</div><div class="step-explainer-text">Right now <code>"2024-03-15"</code> is just <strong>10 characters</strong>. To Python, it's no different from <code>"hello world"</code>.</div>`;
+  await sleep(1700);
+  document.getElementById('dp-s0').classList.replace('active','done');
+
+  document.getElementById('dp-s1').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 2 · Call pd.to_datetime()</div><div class="step-explainer-text">pandas reads the format and converts the string into a real <strong>Timestamp</strong> object. The display looks similar, but the type has changed.</div>`;
+  document.getElementById('dpArrow').classList.add('visible');
+  document.getElementById('dpOp').classList.add('visible');
+  await sleep(700);
+  document.getElementById('dpParsed').style.opacity = '1';
+  await sleep(1700);
+  document.getElementById('dp-s1').classList.replace('active','done');
+
+  document.getElementById('dp-s2').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 3 · Unlock the components</div><div class="step-explainer-text">A Timestamp exposes every part of the date through the <code>.dt</code> accessor — year, month, weekday, quarter and more, ready for filtering or grouping.</div>`;
+  const labels = ['year','month','day','day_name','quarter','week','is_weekend','days_since'];
+  for (let i=0; i<8; i++) {
+    document.getElementById('dp-c'+i).classList.add('visible');
+    await sleep(280);
+  }
+  document.getElementById('dp-s2').classList.replace('active','done');
+  exp.innerHTML = `<div class="step-explainer-label">Done · One string &rarr; eight signals</div><div class="step-explainer-text">A parsed date is the <strong>foundation for cohort analysis, seasonality, and time-series forecasting</strong>. Always parse dates the moment you load the data.</div>`;
+}
+
+/* ─── LESSON 5: STRING CLEANING ─── */
+async function playSC() {
+  // reset
+  const i0=document.getElementById('sc-i0'), i1=document.getElementById('sc-i1'), i2=document.getElementById('sc-i2');
+  i0.innerHTML = '<span class="ws-marker">··</span>Asha SHARMA<span class="ws-marker">··</span>';
+  i1.innerHTML = 'asha sharma';
+  i2.innerHTML = 'ASHA<span class="ws-marker">··</span>Sharma';
+  [i0,i1,i2].forEach(el => { el.classList.remove('cleaning','done'); });
+  document.querySelectorAll('.sc-op').forEach(o => o.classList.remove('active','done'));
+  document.querySelectorAll('#strings .step-dot').forEach(d => d.classList.remove('active','done'));
+  const exp = document.getElementById('scExplain');
+
+  // strip
+  document.getElementById('sc-s0').classList.add('active');
+  document.getElementById('sc-op0').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 1 · .str.strip()</div><div class="step-explainer-text">Remove leading and trailing whitespace from every string. Notice the dots on each side — those represent invisible spaces in the raw data.</div>`;
+  [i0,i1,i2].forEach(el => el.classList.add('cleaning'));
+  await sleep(1500);
+  i0.innerHTML = 'Asha SHARMA';
+  i1.innerHTML = 'asha sharma';
+  i2.innerHTML = 'ASHA<span class="ws-marker">··</span>Sharma';
+  await sleep(1100);
+  document.getElementById('sc-op0').classList.replace('active','done');
+  document.getElementById('sc-s0').classList.replace('active','done');
+
+  // lower
+  document.getElementById('sc-s1').classList.add('active');
+  document.getElementById('sc-op1').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 2 · .str.lower()</div><div class="step-explainer-text">Force everything to lowercase. Now case is no longer a source of difference between the three rows.</div>`;
+  await sleep(1200);
+  i0.innerHTML = 'asha sharma';
+  i1.innerHTML = 'asha sharma';
+  i2.innerHTML = 'asha<span class="ws-marker">··</span>sharma';
+  await sleep(1300);
+  document.getElementById('sc-op1').classList.replace('active','done');
+  document.getElementById('sc-s1').classList.replace('active','done');
+
+  // collapse spaces
+  document.getElementById('sc-s2').classList.add('active');
+  document.getElementById('sc-op2').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 3 · Collapse multiple spaces</div><div class="step-explainer-text"><code>r'\\s+'</code> matches one-or-more whitespace characters and replaces with a single space. Row 3's double space becomes one.</div>`;
+  await sleep(1300);
+  i2.innerHTML = 'asha sharma';
+  await sleep(1300);
+  document.getElementById('sc-op2').classList.replace('active','done');
+  document.getElementById('sc-s2').classList.replace('active','done');
+
+  // title
+  document.getElementById('sc-s3').classList.add('active');
+  document.getElementById('sc-op3').classList.add('active');
+  exp.innerHTML = `<div class="step-explainer-label">Step 4 · .str.title()</div><div class="step-explainer-text">Capitalise the first letter of each word for nice display. All three strings now collapse into the same value.</div>`;
+  await sleep(1200);
+  [i0,i1,i2].forEach(el => { el.innerHTML = 'Asha Sharma'; el.classList.remove('cleaning'); el.classList.add('done'); });
+  await sleep(800);
+  document.getElementById('sc-op3').classList.replace('active','done');
+  document.getElementById('sc-s3').classList.replace('active','done');
+  exp.innerHTML = `<div class="step-explainer-label">Done · 3 rows = 1 customer</div><div class="step-explainer-text">All three messy entries are now identical: <strong>"Asha Sharma"</strong>. <code>nunique()</code> drops from 3 to 1 — the truth.</div>`;
+}
+
+// Auto-play first animation
+window.addEventListener('load', () => {
+  setTimeout(() => applyMV('mean'), 1500);
+});
+</script>
+</body>
+</html>

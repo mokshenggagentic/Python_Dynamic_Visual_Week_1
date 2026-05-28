@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Review — MokshPath Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --orange:#E87A2E;--orange-dark:#D06A20;--orange-light:#F5943E;--orange-glow:rgba(232,122,46,0.12);
+  --navy:#2B2D42;--navy-dark:#1A1B2E;
+  --bg:#F3EDE7;--bg-card:#FFFFFF;--bg-light:#F9F5F0;
+  --text-primary:#2B2D42;--text-secondary:#6B6D7B;--text-muted:#9597A6;
+  --border:#E5DDD4;--green:#4CAF50;--green-light:#E8F5E9;--blue:#4285F4;--red:#E74C3C;
+  --shadow-sm:0 2px 8px rgba(43,45,66,0.06);--shadow-md:0 8px 24px rgba(43,45,66,0.08);--shadow-lg:0 16px 48px rgba(43,45,66,0.12);
+  --radius:14px;--radius-sm:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+/* Top Navigation Bar */
+.topbar{background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 2rem;height:72px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+.topbar-left{display:flex;align-items:center;gap:.8rem}
+.topbar-title-wrap{display:flex;flex-direction:column;line-height:1.2}
+.topbar-eyebrow{font-size:.7rem;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:1.15rem;color:var(--navy)}
+.topbar-logo{height:48px;width:auto}
+
+/* Hero */
+.hero{padding:4rem 2rem 3rem;position:relative;overflow:hidden;background:linear-gradient(135deg,#FFFAF3 0%,#F3EDE7 100%)}
+.hero-inner{max-width:1160px;margin:0 auto;text-align:center;position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1.1rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.2rem;animation:fadeUp .7s ease}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1.13;color:var(--navy);margin-bottom:1rem;animation:fadeUp .7s ease .1s both}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero-sub{font-size:1.05rem;color:var(--text-secondary);line-height:1.7;max-width:640px;margin:0 auto 2rem;animation:fadeUp .7s ease .2s both}
+
+/* Topic Pills */
+.topic-pills{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;animation:fadeUp .7s ease .3s both}
+.topic-pill{padding:.5rem 1.1rem;background:var(--bg-card);border:1.5px solid var(--border);border-radius:50px;font-size:.78rem;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:all .25s;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem}
+.topic-pill:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.topic-pill .num{width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700}
+
+/* Decorative shapes in hero */
+.hero-shape{position:absolute;border-radius:50%;opacity:.4;filter:blur(40px)}
+.hero-shape-1{top:-80px;left:-60px;width:280px;height:280px;background:var(--orange-light)}
+.hero-shape-2{bottom:-80px;right:-60px;width:300px;height:300px;background:#FFDFA8}
+
+/* Lesson Section */
+.lesson{padding:4rem 2rem;border-bottom:1px solid var(--border)}
+.lesson:nth-child(odd){background:var(--bg-card)}
+.lesson-inner{max-width:1100px;margin:0 auto}
+.lesson-header{margin-bottom:2.5rem;display:flex;gap:1.5rem;align-items:flex-start}
+.lesson-num{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--orange),var(--orange-light));color:#fff;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1.8rem;flex-shrink:0;box-shadow:0 8px 20px rgba(232,122,46,0.25)}
+.lesson-header-text{flex:1}
+.lesson-eyebrow{font-size:.72rem;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.lesson-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);line-height:1.2;margin-bottom:.6rem}
+.lesson-sub{font-size:.98rem;color:var(--text-secondary);line-height:1.65;max-width:760px}
+
+/* Scenario card */
+.scenario{background:var(--bg-light);border-left:4px solid var(--orange);padding:1.2rem 1.5rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-bottom:2rem}
+.scenario-label{font-size:.68rem;font-weight:800;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
+.scenario-label::before{content:'🏢';font-size:.85rem}
+.scenario-text{font-size:.92rem;color:var(--text-primary);line-height:1.6}
+
+/* Visualization area */
+.viz-container{background:#FAFAFA;border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.viz-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
+.viz-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--navy);display:flex;align-items:center;gap:.5rem}
+.viz-title-dot{width:8px;height:8px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
+.viz-btn{padding:.55rem 1.1rem;border-radius:8px;border:1.5px solid var(--orange);background:var(--orange);color:#fff;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+.viz-btn:hover{background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.viz-btn.secondary{background:transparent;color:var(--orange)}
+.viz-btn.secondary:hover{background:var(--orange-glow);color:var(--orange-dark)}
+
+/* Step indicator */
+.steps-indicator{display:flex;gap:.4rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.step-dot{padding:.35rem .85rem;border-radius:50px;font-size:.7rem;font-weight:600;background:var(--bg-card);border:1.5px solid var(--border);color:var(--text-muted);transition:all .3s}
+.step-dot.active{background:var(--orange);color:#fff;border-color:var(--orange);transform:scale(1.05)}
+.step-dot.done{background:var(--green-light);color:var(--green);border-color:var(--green)}
+
+/* Step explainer */
+.step-explainer{background:var(--bg-card);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.2rem;border:1px solid var(--border);min-height:60px;transition:all .3s}
+.step-explainer-label{font-size:.65rem;font-weight:800;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.step-explainer-text{font-size:.92rem;color:var(--text-primary);line-height:1.55}
+
+/* Animation stage (SVG visualization) */
+.stage{background:#fff;border:1px dashed var(--border);border-radius:var(--radius-sm);min-height:320px;position:relative;overflow:hidden;padding:1.5rem;display:flex;align-items:center;justify-content:center}
+
+/* Function visualization */
+.fn-box{width:140px;height:90px;background:linear-gradient(135deg,var(--orange),var(--orange-light));color:#fff;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;box-shadow:0 8px 24px rgba(232,122,46,0.3);position:relative;transition:all .4s}
+.fn-box.processing{animation:processing 0.6s ease infinite}
+.fn-box-label{font-size:.65rem;font-weight:600;opacity:.85;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.2rem}
+.fn-box-name{font-family:'JetBrains Mono',monospace;font-size:.95rem}
+.fn-flow{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.fn-token{padding:.6rem 1.1rem;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;color:var(--navy);position:relative;transition:all .5s;opacity:0;transform:translateX(-30px)}
+.fn-token.visible{opacity:1;transform:translateX(0)}
+.fn-token.input{border-color:var(--blue);color:var(--blue)}
+.fn-token.output{border-color:var(--green);color:var(--green);background:var(--green-light)}
+.fn-arrow{font-size:1.4rem;color:var(--text-muted);opacity:0;transition:opacity .4s}
+.fn-arrow.visible{opacity:1}
+@keyframes processing{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+/* List comprehension viz */
+.lc-stage{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center;width:100%}
+.lc-list{display:flex;flex-direction:column;gap:.4rem;background:var(--bg-light);padding:.8rem;border-radius:10px;min-width:120px}
+.lc-list-label{font-size:.65rem;font-weight:800;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-bottom:.2rem}
+.lc-item{padding:.45rem .7rem;background:var(--bg-card);border:1.5px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.78rem;text-align:center;font-weight:600;transition:all .4s;color:var(--navy);position:relative}
+.lc-item.checking{border-color:var(--orange);background:var(--orange-glow);transform:scale(1.05)}
+.lc-item.pass{border-color:var(--green);background:var(--green-light);color:#2E7D32}
+.lc-item.fail{opacity:.25;text-decoration:line-through}
+.lc-item.transformed{border-color:var(--orange);background:var(--orange-glow);color:var(--orange-dark)}
+.lc-arrow{font-size:1.5rem;color:var(--orange);font-weight:bold}
+.lc-condition{padding:.55rem 1rem;background:var(--orange-glow);color:var(--orange-dark);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;border:2px dashed var(--orange)}
+
+/* Dictionary viz */
+.dict-container{display:flex;flex-direction:column;gap:.5rem;background:var(--bg-light);padding:1rem;border-radius:12px;min-width:300px}
+.dict-bracket{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--text-muted);text-align:center;line-height:1}
+.dict-entry{display:flex;align-items:center;gap:.6rem;padding:.55rem .9rem;background:var(--bg-card);border-radius:8px;border:1.5px solid var(--border);transition:all .4s;opacity:0;transform:translateY(10px)}
+.dict-entry.visible{opacity:1;transform:translateY(0)}
+.dict-entry.highlight{border-color:var(--orange);background:var(--orange-glow);transform:scale(1.02) translateY(0)}
+.dict-key{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue);font-size:.85rem}
+.dict-colon{color:var(--text-muted);font-weight:700}
+.dict-value{font-family:'JetBrains Mono',monospace;color:var(--navy);font-size:.85rem;flex:1}
+.dict-pointer{position:absolute;display:flex;align-items:center;gap:.4rem;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--orange);font-weight:700;opacity:0;transition:all .4s}
+.dict-pointer.visible{opacity:1}
+
+/* Error handling viz */
+.err-flow{display:flex;flex-direction:column;gap:.6rem;width:100%;max-width:500px}
+.err-block{padding:1rem 1.2rem;border-radius:10px;display:flex;align-items:center;gap:.8rem;border:2px solid var(--border);background:var(--bg-card);transition:all .4s;opacity:.45}
+.err-block.active{opacity:1;border-color:var(--orange);box-shadow:0 6px 16px rgba(232,122,46,0.2);transform:translateX(4px)}
+.err-block.success{border-color:var(--green);background:var(--green-light);opacity:1}
+.err-block.error{border-color:var(--red);background:#FFEDED;opacity:1}
+.err-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:.85rem}
+.err-block .err-icon{background:var(--bg);color:var(--text-muted)}
+.err-block.active .err-icon{background:var(--orange);color:#fff}
+.err-block.success .err-icon{background:var(--green);color:#fff}
+.err-block.error .err-icon{background:var(--red);color:#fff}
+.err-label{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--navy);font-size:.88rem}
+.err-desc{font-size:.78rem;color:var(--text-secondary);margin-top:.15rem}
+.err-conn{height:14px;width:2px;background:var(--border);margin-left:1.8rem;transition:background .3s}
+.err-conn.active{background:var(--orange)}
+
+/* Code display */
+.code-block{background:#1a1b2e;border-radius:var(--radius);padding:1.4rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.7;color:#E8E8F0;overflow-x:auto;position:relative;margin-bottom:1rem}
+.code-header{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-dot{width:11px;height:11px;border-radius:50%}.code-dot.r{background:#FF5F57}.code-dot.y{background:#FEBC2E}.code-dot.g{background:#28C840}
+.code-filename{margin-left:.6rem;font-size:.72rem;color:rgba(255,255,255,0.5);font-family:'JetBrains Mono',monospace}
+.code-keyword{color:#FF7B72}
+.code-string{color:#A5D6FF}
+.code-num{color:#79C0FF}
+.code-fn{color:#D2A8FF}
+.code-comment{color:#8B949E;font-style:italic}
+.code-var{color:#79C0FF}
+.code-builtin{color:#FFA657}
+
+/* Output */
+.output-block{background:#0d1117;border-radius:var(--radius);padding:1.2rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#7EE787;border:1px solid rgba(126,231,135,0.2);position:relative;overflow-x:auto}
+.output-label{font-size:.65rem;color:var(--text-muted);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.output-label::before{content:'▶';color:var(--green);font-size:.6rem}
+
+/* Two column layout */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
+
+/* Key takeaway */
+.takeaway{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border-radius:var(--radius);padding:1.5rem 1.8rem;margin-top:1.5rem;position:relative;overflow:hidden}
+.takeaway::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(232,122,46,0.15)}
+.takeaway-label{font-size:.7rem;font-weight:800;color:var(--orange-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;position:relative}
+.takeaway-text{font-size:.95rem;line-height:1.6;color:rgba(255,255,255,0.95);position:relative}
+.takeaway-text strong{color:var(--orange-light)}
+
+/* Footer */
+footer{background:var(--navy-dark);color:#fff;padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:800px;margin:0 auto}
+.footer-title{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:.5rem}
+.footer-title em{color:var(--orange);font-style:normal}
+.footer-sub{color:rgba(255,255,255,0.6);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem}
+.footer-nav{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.footer-nav a{padding:.5rem 1.1rem;background:rgba(255,255,255,0.06);color:#fff;text-decoration:none;border-radius:8px;font-size:.82rem;font-weight:500;transition:all .2s;border:1px solid rgba(255,255,255,0.08)}
+.footer-nav a:hover{background:var(--orange);border-color:var(--orange);transform:translateY(-2px)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(0.9)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+
+@media(max-width:760px){
+  .topbar{padding:0 1rem;height:60px}
+  .topbar-logo{height:40px}
+  .topbar-title{font-size:.95rem}
+  .hero{padding:2.5rem 1.2rem 2rem}
+  .lesson{padding:2.5rem 1.2rem}
+  .lesson-header{flex-direction:column;gap:1rem}
+  .lesson-num{width:52px;height:52px;font-size:1.5rem}
+  .viz-container{padding:1.2rem}
+  .stage{padding:1rem;min-height:240px}
+  .two-col{grid-template-columns:1fr}
+  .fn-flow{flex-direction:column;gap:1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-title-wrap">
+      <span class="topbar-eyebrow">Lesson 01 · Foundations</span>
+      <span class="topbar-title">Python Review for Data</span>
+    </div>
+  </div>
+  <img src="hero.svg" alt="MokshPath Logo" class="topbar-logo">
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-shape hero-shape-1"></div>
+  <div class="hero-shape hero-shape-2"></div>
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span>Visual Learning · No code experience needed</div>
+    <h1>Python <em>Power Tools</em> Every Data Analyst Uses Daily</h1>
+    <p class="hero-sub">Watch four foundational Python ideas come to life through step-by-step animations. We'll use real industry data — sales transactions, customer records, and operational logs — so each concept clicks the moment you see it.</p>
+    <div class="topic-pills">
+      <a class="topic-pill" href="#functions"><span class="num">1</span>Functions</a>
+      <a class="topic-pill" href="#listcomp"><span class="num">2</span>List Comprehensions</a>
+      <a class="topic-pill" href="#dicts"><span class="num">3</span>Dictionaries</a>
+      <a class="topic-pill" href="#errors"><span class="num">4</span>Error Handling</a>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 1: FUNCTIONS -->
+<section class="lesson" id="functions">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">1</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Reusable Machine</div>
+        <h2 class="lesson-title">Functions — Recipes that turn inputs into outputs</h2>
+        <p class="lesson-sub">A function is a named block of instructions. You feed it ingredients (called <strong>arguments</strong>), it follows your recipe, and hands back a result. Once written, you can call it a hundred times without rewriting the logic.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">An e-commerce analyst needs to calculate the <strong>total price after tax</strong> for every order. Instead of doing the math by hand for 50,000 orders, she writes a function once and reuses it.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch a function in action</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetFn()">↺ Reset</button>
+          <button class="viz-btn" onclick="playFn()">▶ Play Animation</button>
+        </div>
+      </div>
+
+      <div class="steps-indicator" id="fnSteps">
+        <div class="step-dot" data-step="1">1. Call</div>
+        <div class="step-dot" data-step="2">2. Receive Inputs</div>
+        <div class="step-dot" data-step="3">3. Process</div>
+        <div class="step-dot" data-step="4">4. Return Output</div>
+      </div>
+
+      <div class="step-explainer" id="fnExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">Press <strong>Play Animation</strong> to see how Python calls a function called <code>add_tax</code>, passes it a price and a tax rate, and gets back the final amount.</div>
+      </div>
+
+      <div class="stage">
+        <div class="fn-flow">
+          <div class="fn-token input" id="fnIn1">price=200</div>
+          <div class="fn-token input" id="fnIn2">tax=0.18</div>
+          <div class="fn-arrow" id="fnArr1">→</div>
+          <div class="fn-box" id="fnBox">
+            <div class="fn-box-label">function</div>
+            <div class="fn-box-name">add_tax()</div>
+          </div>
+          <div class="fn-arrow" id="fnArr2">→</div>
+          <div class="fn-token output" id="fnOut">236.00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div>
+          <div class="code-filename">tax_calculator.py</div>
+        </div>
+<span class="code-comment"># Define the function once</span>
+<span class="code-keyword">def</span> <span class="code-fn">add_tax</span>(price, tax_rate):
+    <span class="code-comment"># Apply the tax and return final price</span>
+    final = price + (price * tax_rate)
+    <span class="code-keyword">return</span> <span class="code-builtin">round</span>(final, <span class="code-num">2</span>)
+
+<span class="code-comment"># Use it on a real order</span>
+order_price = <span class="code-num">200</span>
+gst = <span class="code-num">0.18</span>
+total = <span class="code-fn">add_tax</span>(order_price, gst)
+<span class="code-builtin">print</span>(<span class="code-string">f"Customer pays ₹{total}"</span>)</div>
+
+      <div class="output-block">
+        <div class="output-label">Output</div>
+Customer pays ₹236.0
+
+<span style="color:#8B949E;font-style:italic"># Now reuse for any product:</span>
+<span style="color:#A5D6FF">add_tax(1500, 0.05)</span> → 1575.00
+<span style="color:#A5D6FF">add_tax(799, 0.12)</span>  → 894.88
+<span style="color:#A5D6FF">add_tax(50000, 0.28)</span> → 64000.00
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text">Without functions, you'd paste the same math everywhere. <strong>Change the formula once</strong>, and every report instantly uses the new version. Functions are the foundation of <strong>clean, reliable data pipelines</strong>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 2: LIST COMPREHENSIONS -->
+<section class="lesson" id="listcomp">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">2</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The One-Line Filter</div>
+        <h2 class="lesson-title">List Comprehensions — Filter and transform in one line</h2>
+        <p class="lesson-sub">Imagine going through a list of 1,000 sales transactions and picking only the ones above ₹500, while also rounding their amounts. List comprehensions do this in <strong>a single readable line</strong>, the way data analysts love it.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A finance team has daily transaction amounts. They need to identify <strong>high-value orders above ₹500</strong> for their VIP rewards program — and apply a 10% loyalty bonus to each.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch each item flow through the filter</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetLC()">↺ Reset</button>
+          <button class="viz-btn" onclick="playLC()">▶ Play Animation</button>
+        </div>
+      </div>
+
+      <div class="step-explainer" id="lcExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">We have transaction amounts. Watch each one get <strong>checked</strong>, <strong>filtered</strong>, and <strong>transformed</strong> — all in one motion.</div>
+      </div>
+
+      <div class="stage">
+        <div class="lc-stage">
+          <div class="lc-list">
+            <div class="lc-list-label">Input</div>
+            <div class="lc-item" id="lc-i0">120</div>
+            <div class="lc-item" id="lc-i1">750</div>
+            <div class="lc-item" id="lc-i2">300</div>
+            <div class="lc-item" id="lc-i3">980</div>
+            <div class="lc-item" id="lc-i4">450</div>
+            <div class="lc-item" id="lc-i5">1200</div>
+          </div>
+
+          <div class="lc-arrow">→</div>
+
+          <div class="lc-condition" id="lcCondition">if amount &gt; 500</div>
+
+          <div class="lc-arrow">→</div>
+
+          <div class="lc-list">
+            <div class="lc-list-label">Result (×1.1)</div>
+            <div class="lc-item" id="lc-r0" style="opacity:0">—</div>
+            <div class="lc-item" id="lc-r1" style="opacity:0">—</div>
+            <div class="lc-item" id="lc-r2" style="opacity:0">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div>
+          <div class="code-filename">vip_bonus.py</div>
+        </div>
+transactions = [<span class="code-num">120</span>, <span class="code-num">750</span>, <span class="code-num">300</span>,
+                <span class="code-num">980</span>, <span class="code-num">450</span>, <span class="code-num">1200</span>]
+
+<span class="code-comment"># Keep > 500 AND apply 10% bonus</span>
+vip_rewards = [
+    <span class="code-builtin">round</span>(amt * <span class="code-num">1.1</span>, <span class="code-num">2</span>)
+    <span class="code-keyword">for</span> amt <span class="code-keyword">in</span> transactions
+    <span class="code-keyword">if</span> amt &gt; <span class="code-num">500</span>
+]
+
+<span class="code-builtin">print</span>(vip_rewards)</div>
+
+      <div class="output-block">
+        <div class="output-label">Output</div>
+[825.0, 1078.0, 1320.0]
+
+<span style="color:#8B949E;font-style:italic"># Equivalent verbose code (10+ lines):
+# vip_rewards = []
+# for amt in transactions:
+#     if amt &gt; 500:
+#         bonus = amt * 1.1
+#         vip_rewards.append(round(bonus, 2))</span>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text">List comprehensions replace <strong>5–10 lines of loop code with one line</strong>. They're also <strong>30–40% faster</strong> than regular loops in Python. Every senior analyst writes them daily.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 3: DICTIONARIES -->
+<section class="lesson" id="dicts">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">3</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Instant Lookup</div>
+        <h2 class="lesson-title">Dictionaries — Find any record by its label</h2>
+        <p class="lesson-sub">A dictionary stores data as <strong>key → value</strong> pairs. Want a customer's email by their ID? Their loyalty tier? Their last order? Instead of scanning thousands of rows, a dictionary jumps straight to it.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A SaaS support team wants to instantly look up a customer's <strong>plan, region, and email</strong> from their user ID — without searching through a giant CSV every time.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch a key unlock its value</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetDict()">↺ Reset</button>
+          <button class="viz-btn" onclick="playDict()">▶ Play Animation</button>
+        </div>
+      </div>
+
+      <div class="step-explainer" id="dictExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">Each entry is a labelled box. Type the label, get the value — no searching needed.</div>
+      </div>
+
+      <div class="stage">
+        <div style="position:relative">
+          <div class="dict-container">
+            <div class="dict-bracket">{</div>
+            <div class="dict-entry" id="dict-0"><span class="dict-key">"name"</span><span class="dict-colon">:</span><span class="dict-value">"Priya Sharma"</span></div>
+            <div class="dict-entry" id="dict-1"><span class="dict-key">"plan"</span><span class="dict-colon">:</span><span class="dict-value">"Pro Annual"</span></div>
+            <div class="dict-entry" id="dict-2"><span class="dict-key">"region"</span><span class="dict-colon">:</span><span class="dict-value">"Mumbai"</span></div>
+            <div class="dict-entry" id="dict-3"><span class="dict-key">"email"</span><span class="dict-colon">:</span><span class="dict-value">"priya@nova.co"</span></div>
+            <div class="dict-entry" id="dict-4"><span class="dict-key">"mrr"</span><span class="dict-colon">:</span><span class="dict-value">2400</span></div>
+            <div class="dict-bracket">}</div>
+          </div>
+          <div id="dictQuery" style="text-align:center;margin-top:1rem;font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:var(--orange);min-height:1.4rem;opacity:0;transition:opacity .3s">customer["region"]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div>
+          <div class="code-filename">customer_lookup.py</div>
+        </div>
+customer = {
+    <span class="code-string">"name"</span>: <span class="code-string">"Priya Sharma"</span>,
+    <span class="code-string">"plan"</span>: <span class="code-string">"Pro Annual"</span>,
+    <span class="code-string">"region"</span>: <span class="code-string">"Mumbai"</span>,
+    <span class="code-string">"email"</span>: <span class="code-string">"priya@nova.co"</span>,
+    <span class="code-string">"mrr"</span>: <span class="code-num">2400</span>,
+}
+
+<span class="code-comment"># Look up any field instantly</span>
+<span class="code-builtin">print</span>(customer[<span class="code-string">"region"</span>])
+<span class="code-builtin">print</span>(customer[<span class="code-string">"plan"</span>])
+
+<span class="code-comment"># Add or update on the fly</span>
+customer[<span class="code-string">"last_login"</span>] = <span class="code-string">"2026-05-20"</span></div>
+
+      <div class="output-block">
+        <div class="output-label">Output</div>
+Mumbai
+Pro Annual
+
+<span style="color:#8B949E;font-style:italic"># A dict with 1,000,000 entries
+# still returns a value in microseconds.</span>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text">Lists are <em>ordered</em>, but dictionaries are <em>labelled</em>. When data has names (customer IDs, product codes, country codes), <strong>dictionaries are massively faster</strong> than scanning a list — even on millions of records.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON 4: ERROR HANDLING -->
+<section class="lesson" id="errors">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">4</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Safety Net</div>
+        <h2 class="lesson-title">Error Handling — Code that doesn't crash on bad data</h2>
+        <p class="lesson-sub">Real-world data is messy. Files go missing, numbers arrive as text, dates are blank. <strong>try/except</strong> tells Python: "if something breaks, here's what to do instead of crashing the whole program."</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A nightly ETL job reads sales CSVs from 20 stores. If <strong>one file is corrupted</strong>, you want the other 19 to still process — not the whole pipeline to fail.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Watch try/except catch a problem</div>
+        <div>
+          <button class="viz-btn secondary" onclick="resetErr()">↺ Reset</button>
+          <button class="viz-btn" onclick="playErr()">▶ Play Animation</button>
+        </div>
+      </div>
+
+      <div class="step-explainer" id="errExplain">
+        <div class="step-explainer-label">Step 0 · Ready</div>
+        <div class="step-explainer-text">We'll try to convert <code>"N/A"</code> to a number. Without protection: <strong>crash</strong>. With try/except: <strong>graceful recovery</strong>.</div>
+      </div>
+
+      <div class="stage">
+        <div class="err-flow">
+          <div class="err-block" id="err-0">
+            <div class="err-icon">1</div>
+            <div>
+              <div class="err-label">try:</div>
+              <div class="err-desc">Attempt to convert "N/A" to a float</div>
+            </div>
+          </div>
+          <div class="err-conn" id="err-c0"></div>
+          <div class="err-block" id="err-1">
+            <div class="err-icon">⚠</div>
+            <div>
+              <div class="err-label">ValueError raised!</div>
+              <div class="err-desc">Python can't turn "N/A" into a number</div>
+            </div>
+          </div>
+          <div class="err-conn" id="err-c1"></div>
+          <div class="err-block" id="err-2">
+            <div class="err-icon">2</div>
+            <div>
+              <div class="err-label">except ValueError:</div>
+              <div class="err-desc">Catch it. Substitute 0 instead.</div>
+            </div>
+          </div>
+          <div class="err-conn" id="err-c2"></div>
+          <div class="err-block" id="err-3">
+            <div class="err-icon">✓</div>
+            <div>
+              <div class="err-label">Program continues</div>
+              <div class="err-desc">No crash. Next row processes normally.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div>
+          <div class="code-filename">safe_loader.py</div>
+        </div>
+sales_raw = [<span class="code-string">"450"</span>, <span class="code-string">"N/A"</span>, <span class="code-string">"890"</span>, <span class="code-string">""</span>, <span class="code-string">"320"</span>]
+clean_sales = []
+
+<span class="code-keyword">for</span> value <span class="code-keyword">in</span> sales_raw:
+    <span class="code-keyword">try</span>:
+        clean_sales.append(<span class="code-builtin">float</span>(value))
+    <span class="code-keyword">except</span> <span class="code-builtin">ValueError</span>:
+        <span class="code-comment"># Replace bad value with 0</span>
+        clean_sales.append(<span class="code-num">0.0</span>)
+        <span class="code-builtin">print</span>(<span class="code-string">f"Skipped: '{value}'"</span>)
+
+<span class="code-builtin">print</span>(clean_sales)</div>
+
+      <div class="output-block">
+        <div class="output-label">Output</div>
+Skipped: 'N/A'
+Skipped: ''
+[450.0, 0.0, 890.0, 0.0, 320.0]
+
+<span style="color:#8B949E;font-style:italic"># Without try/except, the program
+# would CRASH on the second value.</span>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">💡 Why this matters</div>
+      <div class="takeaway-text">In production, data pipelines must be <strong>resilient</strong>. A single bad row shouldn't take down a job that processes a million rows. <strong>try/except</strong> is the #1 tool for production-grade Python.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">Ready for <em>Lesson 02</em>?</div>
+    <div class="footer-sub">Next: Pandas Essentials — load real data files, filter rows, group, sort, and merge tables like a working analyst.</div>
+    <div class="footer-nav">
+      <a href="01-python-review.html">1 · Python Review</a>
+      <a href="02-pandas-essentials.html">2 · Pandas Essentials</a>
+      <a href="03-data-cleaning.html">3 · Data Cleaning</a>
+      <a href="04-numpy-aggregation.html">4 · NumPy Aggregation</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ============ FUNCTIONS ANIMATION ============
+function resetFn() {
+  ['fnIn1','fnIn2','fnArr1','fnArr2','fnOut'].forEach(id => {
+    document.getElementById(id).classList.remove('visible');
+  });
+  document.getElementById('fnBox').classList.remove('processing');
+  document.querySelectorAll('#fnSteps .step-dot').forEach(d => d.classList.remove('active','done'));
+  document.getElementById('fnExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">Press <strong>Play Animation</strong> to see how Python calls a function called <code>add_tax</code>, passes it a price and a tax rate, and gets back the final amount.</div>`;
+}
+async function playFn() {
+  resetFn();
+  const explain = document.getElementById('fnExplain');
+  const setStep = (n, label, text) => {
+    document.querySelectorAll('#fnSteps .step-dot').forEach(d => {
+      const s = parseInt(d.dataset.step);
+      d.classList.remove('active','done');
+      if (s < n) d.classList.add('done');
+      if (s === n) d.classList.add('active');
+    });
+    explain.innerHTML = `<div class="step-explainer-label">${label}</div><div class="step-explainer-text">${text}</div>`;
+  };
+  await sleep(300);
+  setStep(1, 'Step 1 · The Call', 'Your code calls <code>add_tax(200, 0.18)</code>. Python prepares to deliver the inputs to the function box.');
+  await sleep(1200);
+  setStep(2, 'Step 2 · Inputs Arrive', 'The values <strong>200</strong> and <strong>0.18</strong> travel to the function as arguments.');
+  document.getElementById('fnIn1').classList.add('visible');
+  await sleep(500);
+  document.getElementById('fnIn2').classList.add('visible');
+  await sleep(800);
+  document.getElementById('fnArr1').classList.add('visible');
+  await sleep(600);
+  setStep(3, 'Step 3 · Processing', 'Inside the box, Python runs the recipe: <code>200 + (200 × 0.18) = 236</code>. The function does its magic.');
+  document.getElementById('fnBox').classList.add('processing');
+  await sleep(1800);
+  document.getElementById('fnBox').classList.remove('processing');
+  document.getElementById('fnArr2').classList.add('visible');
+  await sleep(600);
+  setStep(4, 'Step 4 · Output Returned', 'The result <strong>236.00</strong> flows back out. Your code can now use it anywhere — print it, store it, or pass it on.');
+  document.getElementById('fnOut').classList.add('visible');
+  await sleep(800);
+  document.querySelectorAll('#fnSteps .step-dot').forEach(d => { d.classList.remove('active'); d.classList.add('done'); });
+}
+
+// ============ LIST COMPREHENSION ANIMATION ============
+const lcValues = [120, 750, 300, 980, 450, 1200];
+function resetLC() {
+  lcValues.forEach((v, i) => {
+    const el = document.getElementById('lc-i' + i);
+    el.className = 'lc-item';
+    el.textContent = v;
+  });
+  for (let i = 0; i < 3; i++) {
+    const r = document.getElementById('lc-r' + i);
+    r.style.opacity = '0';
+    r.className = 'lc-item';
+    r.textContent = '—';
+  }
+  document.getElementById('lcExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">We have transaction amounts. Watch each one get <strong>checked</strong>, <strong>filtered</strong>, and <strong>transformed</strong> — all in one motion.</div>`;
+}
+async function playLC() {
+  resetLC();
+  const explain = document.getElementById('lcExplain');
+  let resultIdx = 0;
+  for (let i = 0; i < lcValues.length; i++) {
+    const v = lcValues[i];
+    const el = document.getElementById('lc-i' + i);
+    el.classList.add('checking');
+    explain.innerHTML = `<div class="step-explainer-label">Step ${i+1} · Checking ${v}</div><div class="step-explainer-text">Is <strong>${v} &gt; 500</strong>? ${v > 500 ? '✅ Yes — keep it and multiply by 1.1' : '❌ No — discard it'}</div>`;
+    await sleep(900);
+    if (v > 500) {
+      el.classList.remove('checking');
+      el.classList.add('pass');
+      await sleep(400);
+      const bonus = +(v * 1.1).toFixed(2);
+      const r = document.getElementById('lc-r' + resultIdx);
+      r.textContent = bonus;
+      r.classList.add('transformed');
+      r.style.opacity = '1';
+      r.style.transform = 'scale(1.1)';
+      await sleep(300);
+      r.style.transform = 'scale(1)';
+      resultIdx++;
+    } else {
+      el.classList.remove('checking');
+      el.classList.add('fail');
+    }
+    await sleep(400);
+  }
+  explain.innerHTML = `<div class="step-explainer-label">Done · Filter + transform complete</div><div class="step-explainer-text">In one line we went from 6 transactions to <strong>3 VIP rewards</strong>, each already including the 10% bonus.</div>`;
+}
+
+// ============ DICTIONARY ANIMATION ============
+function resetDict() {
+  for (let i = 0; i < 5; i++) {
+    const el = document.getElementById('dict-' + i);
+    el.classList.remove('visible','highlight');
+  }
+  document.getElementById('dictQuery').style.opacity = '0';
+  document.getElementById('dictExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">Each entry is a labelled box. Type the label, get the value — no searching needed.</div>`;
+}
+async function playDict() {
+  resetDict();
+  const explain = document.getElementById('dictExplain');
+  explain.innerHTML = `<div class="step-explainer-label">Step 1 · Building the dictionary</div><div class="step-explainer-text">Each key-value pair gets added with curly braces and colons.</div>`;
+  for (let i = 0; i < 5; i++) {
+    document.getElementById('dict-' + i).classList.add('visible');
+    await sleep(280);
+  }
+  await sleep(700);
+  const lookups = [
+    { idx: 2, key: '"region"', val: 'Mumbai' },
+    { idx: 1, key: '"plan"', val: 'Pro Annual' },
+    { idx: 3, key: '"email"', val: 'priya@nova.co' }
+  ];
+  for (const lk of lookups) {
+    explain.innerHTML = `<div class="step-explainer-label">Lookup · customer[${lk.key}]</div><div class="step-explainer-text">Python jumps <strong>directly</strong> to the matching entry. The answer: <strong>${lk.val}</strong>.</div>`;
+    const q = document.getElementById('dictQuery');
+    q.textContent = `customer[${lk.key}]  →  "${lk.val}"`;
+    q.style.opacity = '1';
+    document.getElementById('dict-' + lk.idx).classList.add('highlight');
+    await sleep(1400);
+    document.getElementById('dict-' + lk.idx).classList.remove('highlight');
+    q.style.opacity = '0';
+    await sleep(300);
+  }
+  explain.innerHTML = `<div class="step-explainer-label">Done · Instant retrieval</div><div class="step-explainer-text">No matter how big the dictionary grows, lookups stay <strong>nearly instant</strong>. That's why dicts power user databases, caches, and API responses.</div>`;
+}
+
+// ============ ERROR HANDLING ANIMATION ============
+function resetErr() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('err-' + i).classList.remove('active','success','error');
+  }
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('err-c' + i).classList.remove('active');
+  }
+  document.getElementById('errExplain').innerHTML = `<div class="step-explainer-label">Step 0 · Ready</div><div class="step-explainer-text">We'll try to convert <code>"N/A"</code> to a number. Without protection: <strong>crash</strong>. With try/except: <strong>graceful recovery</strong>.</div>`;
+}
+async function playErr() {
+  resetErr();
+  const explain = document.getElementById('errExplain');
+  explain.innerHTML = `<div class="step-explainer-label">Step 1 · Enter the try block</div><div class="step-explainer-text">Python enters the <code>try</code> block hopefully — expecting things to work.</div>`;
+  document.getElementById('err-0').classList.add('active');
+  await sleep(1500);
+
+  explain.innerHTML = `<div class="step-explainer-label">Step 2 · Problem!</div><div class="step-explainer-text"><strong>"N/A"</strong> can't be converted to a number. Python raises a <code>ValueError</code>.</div>`;
+  document.getElementById('err-c0').classList.add('active');
+  await sleep(500);
+  document.getElementById('err-1').classList.add('error');
+  document.getElementById('err-0').classList.remove('active');
+  await sleep(1700);
+
+  explain.innerHTML = `<div class="step-explainer-label">Step 3 · Caught by except</div><div class="step-explainer-text">The <code>except</code> block catches the error. Instead of crashing, we substitute <strong>0.0</strong> and log a note.</div>`;
+  document.getElementById('err-c1').classList.add('active');
+  await sleep(500);
+  document.getElementById('err-2').classList.add('active');
+  await sleep(1700);
+
+  explain.innerHTML = `<div class="step-explainer-label">Step 4 · Program continues</div><div class="step-explainer-text">The crisis is over. The loop continues with the <strong>next row</strong> — your pipeline keeps running.</div>`;
+  document.getElementById('err-c2').classList.add('active');
+  await sleep(500);
+  document.getElementById('err-2').classList.remove('active');
+  document.getElementById('err-3').classList.add('success');
+  await sleep(1200);
+  explain.innerHTML = `<div class="step-explainer-label">Done · Safe pipeline</div><div class="step-explainer-text">Production-grade code <strong>anticipates failure</strong>. One bad row never brings down the whole batch.</div>`;
+}
+
+// Auto-play first animation on load to engage the user
+window.addEventListener('load', () => {
+  setTimeout(() => playFn(), 1500);
+});
+</script>
+</body>
+</html>

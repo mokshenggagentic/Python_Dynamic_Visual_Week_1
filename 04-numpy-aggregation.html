@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NumPy for Aggregation — MokshPath Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --orange:#E87A2E;--orange-dark:#D06A20;--orange-light:#F5943E;--orange-glow:rgba(232,122,46,0.12);
+  --navy:#2B2D42;--navy-dark:#1A1B2E;
+  --bg:#F3EDE7;--bg-card:#FFFFFF;--bg-light:#F9F5F0;
+  --text-primary:#2B2D42;--text-secondary:#6B6D7B;--text-muted:#9597A6;
+  --border:#E5DDD4;--green:#4CAF50;--green-light:#E8F5E9;--blue:#4285F4;--blue-light:#E3F2FD;--red:#E74C3C;--red-light:#FFEDED;--purple:#7E57C2;--purple-light:#EDE7F6;
+  --shadow-sm:0 2px 8px rgba(43,45,66,0.06);--shadow-md:0 8px 24px rgba(43,45,66,0.08);--shadow-lg:0 16px 48px rgba(43,45,66,0.12);
+  --radius:14px;--radius-sm:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+/* Top Navigation */
+.topbar{background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 2rem;height:72px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+.topbar-left{display:flex;align-items:center;gap:.8rem}
+.topbar-title-wrap{display:flex;flex-direction:column;line-height:1.2}
+.topbar-eyebrow{font-size:.7rem;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:1.15rem;color:var(--navy)}
+.topbar-logo{height:48px;width:auto}
+
+/* Hero */
+.hero{padding:4rem 2rem 3rem;position:relative;overflow:hidden;background:linear-gradient(135deg,#FFFAF3 0%,#F3EDE7 100%)}
+.hero-inner{max-width:1160px;margin:0 auto;text-align:center;position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1.1rem;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.2rem;animation:fadeUp .7s ease}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1.13;color:var(--navy);margin-bottom:1rem;animation:fadeUp .7s ease .1s both}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero-sub{font-size:1.05rem;color:var(--text-secondary);line-height:1.7;max-width:640px;margin:0 auto 2rem;animation:fadeUp .7s ease .2s both}
+
+.topic-pills{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;animation:fadeUp .7s ease .3s both}
+.topic-pill{padding:.5rem 1.1rem;background:var(--bg-card);border:1.5px solid var(--border);border-radius:50px;font-size:.78rem;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:all .25s;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem}
+.topic-pill:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.topic-pill .num{width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700}
+
+.hero-shape{position:absolute;border-radius:50%;opacity:.4;filter:blur(40px)}
+.hero-shape-1{top:-80px;left:-60px;width:280px;height:280px;background:var(--orange-light)}
+.hero-shape-2{bottom:-80px;right:-60px;width:300px;height:300px;background:#FFDFA8}
+
+/* Lesson section */
+.lesson{padding:4rem 2rem;border-bottom:1px solid var(--border)}
+.lesson:nth-child(odd){background:var(--bg-card)}
+.lesson-inner{max-width:1100px;margin:0 auto}
+.lesson-header{margin-bottom:2.5rem;display:flex;gap:1.5rem;align-items:flex-start}
+.lesson-num{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--orange),var(--orange-light));color:#fff;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1.8rem;flex-shrink:0;box-shadow:0 8px 20px rgba(232,122,46,0.25)}
+.lesson-header-text{flex:1}
+.lesson-eyebrow{font-size:.72rem;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.lesson-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);line-height:1.2;margin-bottom:.6rem}
+.lesson-sub{font-size:.98rem;color:var(--text-secondary);line-height:1.65;max-width:760px}
+
+.scenario{background:var(--bg-light);border-left:4px solid var(--orange);padding:1.2rem 1.5rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-bottom:2rem}
+.scenario-label{font-size:.68rem;font-weight:800;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
+.scenario-label::before{content:'🏢';font-size:.85rem}
+.scenario-text{font-size:.92rem;color:var(--text-primary);line-height:1.6}
+
+.viz-container{background:#FAFAFA;border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.viz-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
+.viz-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--navy);display:flex;align-items:center;gap:.5rem}
+.viz-title-dot{width:8px;height:8px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
+.viz-btn{padding:.55rem 1.1rem;border-radius:8px;border:1.5px solid var(--orange);background:var(--orange);color:#fff;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+.viz-btn:hover{background:var(--orange-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,122,46,0.3)}
+.viz-btn.secondary{background:transparent;color:var(--orange)}
+.viz-btn.secondary:hover{background:var(--orange-glow);color:var(--orange-dark)}
+.viz-btn-group{display:flex;gap:.4rem;flex-wrap:wrap}
+.viz-btn-mini{padding:.5rem .95rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s}
+.viz-btn-mini:hover{border-color:var(--orange);color:var(--orange)}
+.viz-btn-mini.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+
+/* Steps */
+.steps-indicator{display:flex;gap:.4rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.step-dot{padding:.35rem .85rem;border-radius:50px;font-size:.7rem;font-weight:600;background:var(--bg-card);border:1.5px solid var(--border);color:var(--text-muted);transition:all .3s}
+.step-dot.active{background:var(--orange);color:#fff;border-color:var(--orange);transform:scale(1.05)}
+.step-dot.done{background:var(--green-light);color:var(--green);border-color:var(--green)}
+
+.step-explainer{background:var(--bg-card);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.2rem;border:1px solid var(--border);min-height:60px;transition:all .3s}
+.step-explainer-label{font-size:.65rem;font-weight:800;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.step-explainer-text{font-size:.92rem;color:var(--text-primary);line-height:1.55}
+.step-explainer-text code{font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px;font-size:.85rem}
+
+.stage{background:#fff;border:1px dashed var(--border);border-radius:var(--radius-sm);min-height:360px;position:relative;overflow:hidden;padding:1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+
+/* ─── LESSON 1: Vectorised Operations ─── */
+.vec-wrap{display:flex;flex-direction:column;align-items:center;gap:1.2rem;width:100%}
+.vec-mode-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);text-align:center}
+.vec-array-row{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;justify-content:center}
+.vec-bracket{font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--text-muted);font-weight:300;line-height:1}
+.vec-cells{display:flex;gap:.3rem;flex-wrap:wrap;justify-content:center}
+.vec-cell{width:54px;height:54px;background:var(--bg-card);border:1.5px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.82rem;color:var(--navy);transition:all .25s ease;position:relative}
+.vec-cell.processing{background:var(--orange);color:#fff;border-color:var(--orange);transform:translateY(-6px) scale(1.1);box-shadow:0 8px 20px rgba(232,122,46,0.4);z-index:2}
+.vec-cell.done{background:var(--green-light);color:var(--green);border-color:var(--green)}
+.vec-cell.processing-all{background:var(--orange);color:#fff;border-color:var(--orange);transform:scale(1.08);box-shadow:0 6px 14px rgba(232,122,46,0.4)}
+.vec-op-token{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--orange);margin:0 .4rem}
+.vec-mode-badge{display:inline-flex;align-items:center;gap:.45rem;padding:.45rem 1rem;border-radius:50px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.vec-mode-badge.loop{background:var(--red-light);color:var(--red);border:1.5px solid var(--red)}
+.vec-mode-badge.vector{background:var(--green-light);color:var(--green);border:1.5px solid var(--green)}
+.vec-meter{display:flex;align-items:center;gap:.6rem;background:var(--bg-light);padding:.6rem 1.1rem;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;color:var(--navy);border:1px solid var(--border)}
+.vec-meter-label{color:var(--text-muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.vec-meter-val{color:var(--orange);font-size:1rem}
+.vec-pointer{display:none;position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:1.1rem;color:var(--orange);animation:bounce .5s ease infinite}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+
+/* ─── LESSON 2: Statistical Functions ─── */
+.stat-wrap{display:flex;flex-direction:column;align-items:center;gap:1.2rem;width:100%}
+.stat-bars{display:flex;align-items:flex-end;gap:.4rem;height:160px;padding:.5rem 1rem;background:linear-gradient(180deg,transparent,var(--bg-light));border-radius:8px;border-bottom:2px solid var(--border);position:relative}
+.stat-bar{width:38px;background:linear-gradient(180deg,var(--blue) 0%,var(--blue-light) 100%);border-radius:6px 6px 0 0;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:4px;color:#fff;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.7rem;position:relative;transition:all .35s}
+.stat-bar.highlight{background:linear-gradient(180deg,var(--orange) 0%,var(--orange-light) 100%);transform:translateY(-4px) scale(1.04);box-shadow:0 6px 16px rgba(232,122,46,0.3);z-index:2}
+.stat-bar.dim{opacity:.35}
+.stat-bar-label{position:absolute;bottom:-22px;font-size:.65rem;color:var(--text-muted);font-weight:600;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif}
+.stat-bar-val{font-size:.68rem}
+.stat-result{display:none;align-items:center;gap:.6rem;padding:.7rem 1.2rem;background:var(--navy-dark);color:#fff;border-radius:10px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem;margin-top:1.2rem;animation:fillPop .5s ease}
+.stat-result.show{display:inline-flex}
+.stat-result .label{font-size:.7rem;color:var(--orange-light);text-transform:uppercase;letter-spacing:.06em}
+.stat-result .val{font-size:1.1rem;color:#fff}
+.stat-line{position:absolute;left:1rem;right:1rem;border-top:2px dashed var(--orange);opacity:0;transition:opacity .4s}
+.stat-line.visible{opacity:1}
+.stat-line-label{position:absolute;right:0;top:-18px;background:var(--orange);color:#fff;padding:.2rem .5rem;border-radius:4px;font-size:.65rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif}
+@keyframes fillPop{0%{transform:scale(0.7);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+
+/* ─── LESSON 3: Axis-based Aggregation ─── */
+.mat-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem;width:100%;position:relative}
+.mat-with-labels{display:grid;grid-template-columns:auto auto auto;grid-template-rows:auto auto auto;gap:.25rem;align-items:center}
+.mat-col-headers{grid-column:2;display:grid;grid-template-columns:repeat(4,52px);gap:.3rem;justify-self:center;padding-bottom:.2rem}
+.mat-col-headers div{text-align:center;font-size:.62rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+.mat-row-headers{grid-row:2;display:grid;grid-template-rows:repeat(4,42px);gap:.3rem;align-self:start;padding-right:.5rem}
+.mat-row-headers div{display:flex;align-items:center;justify-content:flex-end;font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;text-align:right}
+.mat-grid{grid-row:2;grid-column:2;display:grid;grid-template-columns:repeat(4,52px);grid-template-rows:repeat(4,42px);gap:.3rem;position:relative}
+.mat-cell{background:var(--bg-card);border:1.5px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:.78rem;color:var(--navy);transition:all .35s}
+.mat-cell.col-active{background:var(--orange-glow);border-color:var(--orange);color:var(--orange-dark);transform:scale(1.04)}
+.mat-cell.row-active{background:var(--blue-light);border-color:var(--blue);color:var(--blue);transform:scale(1.04)}
+.mat-row-totals{grid-row:2;grid-column:3;display:grid;grid-template-rows:repeat(4,42px);gap:.3rem;padding-left:.6rem}
+.mat-row-totals div{display:flex;align-items:center;justify-content:center;background:var(--bg-card);border:1.5px solid var(--border);border-radius:6px;width:60px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.82rem;color:var(--text-muted);transition:all .4s;opacity:.5}
+.mat-row-totals div.show{opacity:1;background:var(--blue-light);border-color:var(--blue);color:var(--blue);animation:fillPop .5s ease}
+.mat-col-totals{grid-row:3;grid-column:2;display:grid;grid-template-columns:repeat(4,52px);gap:.3rem;padding-top:.6rem}
+.mat-col-totals div{display:flex;align-items:center;justify-content:center;background:var(--bg-card);border:1.5px solid var(--border);border-radius:6px;height:34px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.82rem;color:var(--text-muted);transition:all .4s;opacity:.5}
+.mat-col-totals div.show{opacity:1;background:var(--orange-glow);border-color:var(--orange);color:var(--orange-dark);animation:fillPop .5s ease}
+.mat-axis-label{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:50px;font-size:.74rem;font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:.4rem}
+.mat-axis-label.axis-0{background:var(--orange-glow);color:var(--orange-dark);border:1.5px solid var(--orange)}
+.mat-axis-label.axis-1{background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue)}
+
+/* Code blocks */
+.code-block{background:#1a1b2e;border-radius:var(--radius);padding:1.4rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.7;color:#E8E8F0;overflow-x:auto;position:relative;margin-bottom:1rem}
+.code-header{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-dot{width:11px;height:11px;border-radius:50%}.code-dot.r{background:#FF5F57}.code-dot.y{background:#FEBC2E}.code-dot.g{background:#28C840}
+.code-filename{margin-left:.6rem;font-size:.72rem;color:rgba(255,255,255,0.5);font-family:'JetBrains Mono',monospace}
+.code-keyword{color:#FF7B72}.code-string{color:#A5D6FF}.code-num{color:#79C0FF}.code-fn{color:#D2A8FF}.code-comment{color:#8B949E;font-style:italic}.code-var{color:#79C0FF}.code-builtin{color:#FFA657}
+
+.output-block{background:#0d1117;border-radius:var(--radius);padding:1.2rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#7EE787;border:1px solid rgba(126,231,135,0.2);position:relative;overflow-x:auto;white-space:pre}
+.output-label{font-size:.65rem;color:var(--text-muted);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.output-label::before{content:'▶';color:var(--green);font-size:.6rem}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
+
+/* Comparison panels */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;width:100%;margin-bottom:1rem}
+.compare-panel{padding:1.2rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg-card);transition:all .3s}
+.compare-panel.loop{border-color:var(--red);background:rgba(231,76,60,0.04)}
+.compare-panel.vector{border-color:var(--green);background:rgba(76,175,80,0.04)}
+.compare-panel.dim{opacity:.5}
+.compare-title{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--navy);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.compare-panel.loop .compare-title{color:var(--red)}
+.compare-panel.vector .compare-title{color:var(--green)}
+
+/* Takeaway */
+.takeaway{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border-radius:var(--radius);padding:1.5rem 1.8rem;margin-top:1.5rem;position:relative;overflow:hidden}
+.takeaway::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(232,122,46,0.15)}
+.takeaway-label{font-size:.7rem;font-weight:800;color:var(--orange-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;position:relative}
+.takeaway-text{font-size:.95rem;line-height:1.6;color:rgba(255,255,255,0.95);position:relative}
+.takeaway-text strong{color:var(--orange-light)}
+
+/* Footer */
+footer{background:var(--navy-dark);color:#fff;padding:3rem 2rem;text-align:center}
+.footer-inner{max-width:800px;margin:0 auto}
+.footer-title{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:.5rem}
+.footer-title em{color:var(--orange);font-style:normal}
+.footer-sub{color:rgba(255,255,255,0.6);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem}
+.footer-nav{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.footer-nav a{padding:.5rem 1.1rem;background:rgba(255,255,255,0.06);color:#fff;text-decoration:none;border-radius:8px;font-size:.82rem;font-weight:500;transition:all .2s;border:1px solid rgba(255,255,255,0.08)}
+.footer-nav a:hover{background:var(--orange);border-color:var(--orange);transform:translateY(-2px)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(0.9)}}
+
+@media(max-width:760px){
+  .topbar{padding:0 1rem;height:60px}
+  .topbar-logo{height:40px}
+  .topbar-title{font-size:.95rem}
+  .hero{padding:2.5rem 1.2rem 2rem}
+  .lesson{padding:2.5rem 1.2rem}
+  .lesson-header{flex-direction:column;gap:1rem}
+  .lesson-num{width:52px;height:52px;font-size:1.5rem}
+  .viz-container{padding:1.2rem}
+  .stage{padding:1rem;min-height:300px}
+  .two-col{grid-template-columns:1fr}
+  .compare-grid{grid-template-columns:1fr}
+  .vec-cell{width:42px;height:42px;font-size:.72rem}
+  .stat-bar{width:30px}
+  .mat-grid{grid-template-columns:repeat(4,40px);grid-template-rows:repeat(4,32px)}
+  .mat-col-headers{grid-template-columns:repeat(4,40px)}
+  .mat-row-headers{grid-template-rows:repeat(4,32px)}
+  .mat-col-totals{grid-template-columns:repeat(4,40px)}
+  .mat-col-totals div{height:28px}
+  .mat-row-totals{grid-template-rows:repeat(4,32px)}
+  .mat-row-totals div{width:46px;height:32px;font-size:.72rem}
+  .mat-cell{font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-title-wrap">
+      <span class="topbar-eyebrow">Lesson 04 · Foundations</span>
+      <span class="topbar-title">NumPy for Aggregation</span>
+    </div>
+  </div>
+  <img src="hero.svg" alt="MokshPath Logo" class="topbar-logo">
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-shape hero-shape-1"></div>
+  <div class="hero-shape hero-shape-2"></div>
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span>Lesson 04 · Speed &amp; Scale</div>
+    <h1>NumPy — Numbers in <em>parallel</em>, at scale</h1>
+    <p class="hero-sub">When your dataset is a million rows, plain Python loops are too slow. NumPy lets you do maths on entire columns at once — vectorised, parallel, and dramatically faster. This lesson covers the three superpowers every analyst uses daily.</p>
+    <div class="topic-pills">
+      <a class="topic-pill" href="#vectorised"><span class="num">1</span>Vectorised Operations</a>
+      <a class="topic-pill" href="#stats"><span class="num">2</span>Statistical Functions</a>
+      <a class="topic-pill" href="#axis"><span class="num">3</span>Column-level Calculations</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LESSON 1: VECTORISED OPERATIONS ═══════════════════════ -->
+<section class="lesson" id="vectorised">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">1</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Parallel Calculator</div>
+        <h2 class="lesson-title">Vectorised Operations — All cells at once</h2>
+        <p class="lesson-sub">A Python for-loop processes one number at a time. NumPy processes the <strong>entire array in one shot</strong>, using highly-optimised C code under the hood. The difference on real datasets is 50&ndash;200&times; — minutes become seconds.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">An e-commerce finance team needs to add <strong>18% GST</strong> to 10 million order amounts before filing tax returns. Using a Python loop, the script ran for 12 minutes. After switching to a single NumPy expression: <strong>under 0.3 seconds</strong>.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Loop vs vectorised &mdash; race them yourself</div>
+        <div class="viz-btn-group">
+          <button class="viz-btn" onclick="playLoop()">▶ Run loop (slow)</button>
+          <button class="viz-btn" onclick="playVector()">⚡ Run vectorised (fast)</button>
+        </div>
+      </div>
+      <div class="step-explainer" id="vecExplain">
+        <div class="step-explainer-label">Ready</div>
+        <div class="step-explainer-text">Below is an array of 10 prices. The task: multiply each by <strong>1.18</strong> (to add 18% GST). Compare the two ways of doing it.</div>
+      </div>
+      <div class="stage" style="min-height:380px">
+        <div class="vec-wrap">
+          <!-- Loop mode -->
+          <div class="compare-grid">
+            <div class="compare-panel loop" id="loopPanel">
+              <div class="compare-title">🐢 Python for-loop</div>
+              <div class="vec-array-row" style="margin-top:.6rem">
+                <span class="vec-bracket">[</span>
+                <div class="vec-cells" id="loopCells">
+                  <div class="vec-cell" data-orig="120">120</div>
+                  <div class="vec-cell" data-orig="85">85</div>
+                  <div class="vec-cell" data-orig="240">240</div>
+                  <div class="vec-cell" data-orig="55">55</div>
+                  <div class="vec-cell" data-orig="320">320</div>
+                  <div class="vec-cell" data-orig="180">180</div>
+                  <div class="vec-cell" data-orig="95">95</div>
+                  <div class="vec-cell" data-orig="410">410</div>
+                  <div class="vec-cell" data-orig="150">150</div>
+                  <div class="vec-cell" data-orig="270">270</div>
+                </div>
+                <span class="vec-bracket">]</span>
+              </div>
+              <div class="vec-mode-label" style="margin-top:.8rem">One cell processed per tick</div>
+              <div class="vec-meter" style="margin-top:.6rem;justify-content:center">
+                <span class="vec-meter-label">⏱</span>
+                <span class="vec-meter-val" id="loopTime">0.000s</span>
+              </div>
+            </div>
+
+            <div class="compare-panel vector" id="vectorPanel">
+              <div class="compare-title">⚡ NumPy vectorised</div>
+              <div class="vec-array-row" style="margin-top:.6rem">
+                <span class="vec-bracket">[</span>
+                <div class="vec-cells" id="vectorCells">
+                  <div class="vec-cell" data-orig="120">120</div>
+                  <div class="vec-cell" data-orig="85">85</div>
+                  <div class="vec-cell" data-orig="240">240</div>
+                  <div class="vec-cell" data-orig="55">55</div>
+                  <div class="vec-cell" data-orig="320">320</div>
+                  <div class="vec-cell" data-orig="180">180</div>
+                  <div class="vec-cell" data-orig="95">95</div>
+                  <div class="vec-cell" data-orig="410">410</div>
+                  <div class="vec-cell" data-orig="150">150</div>
+                  <div class="vec-cell" data-orig="270">270</div>
+                </div>
+                <span class="vec-bracket">]</span>
+              </div>
+              <div class="vec-mode-label" style="margin-top:.8rem">All cells processed simultaneously</div>
+              <div class="vec-meter" style="margin-top:.6rem;justify-content:center">
+                <span class="vec-meter-label">⏱</span>
+                <span class="vec-meter-val" id="vectorTime">0.000s</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:.75rem;color:var(--text-muted);text-align:center;font-style:italic">Click either button above to watch the operation execute</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">vectorise.py</span></div>
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="code-keyword">import</span> time
+
+prices = np.<span class="code-fn">array</span>([<span class="code-num">120</span>, <span class="code-num">85</span>, <span class="code-num">240</span>, ...])  <span class="code-comment"># 10M items</span>
+
+<span class="code-comment"># ❌ The slow way — Python loop</span>
+<span class="code-var">t</span> = time.<span class="code-fn">time</span>()
+result_slow = []
+<span class="code-keyword">for</span> p <span class="code-keyword">in</span> prices:
+    result_slow.<span class="code-fn">append</span>(p * <span class="code-num">1.18</span>)
+<span class="code-fn">print</span>(time.<span class="code-fn">time</span>() - <span class="code-var">t</span>)   <span class="code-comment"># ~12 sec</span>
+
+<span class="code-comment"># ✅ The fast way — one NumPy line</span>
+<span class="code-var">t</span> = time.<span class="code-fn">time</span>()
+result_fast = prices * <span class="code-num">1.18</span>
+<span class="code-fn">print</span>(time.<span class="code-fn">time</span>() - <span class="code-var">t</span>)   <span class="code-comment"># ~0.08 sec</span>
+      </div>
+      <div class="output-block">
+<span style="color:#9597A6">Real benchmark, 10 million prices:</span>
+
+  Python loop      : 12.4 s
+  NumPy vectorised :  0.08 s
+
+<span style="color:#7EE787">→ 155× faster, same result</span>
+
+<span style="color:#FFA657">Why?</span>  NumPy doesn't loop in Python.
+       It hands the whole array to
+       compiled C code that uses CPU
+       SIMD instructions to process
+       many numbers per clock cycle.
+
+<span style="color:#FFA657">Bonus operations that vectorise:</span>
+  +  -  *  /  **  %
+  np.log  np.exp  np.sqrt
+  comparisons (&gt;, ==, &amp;, |)
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key takeaway</div>
+      <div class="takeaway-text">If you find yourself writing <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">for x in column: ...</code> on a numeric column, <strong>stop</strong>. There is almost certainly a vectorised NumPy expression that does the same thing 50&ndash;200&times; faster and reads as a single line.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LESSON 2: STATISTICAL FUNCTIONS ═══════════════════════ -->
+<section class="lesson" id="stats">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">2</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Number Summariser</div>
+        <h2 class="lesson-title">Statistical Functions — Summarise an entire array in one call</h2>
+        <p class="lesson-sub">NumPy gives you single-call versions of every stat you'll ever need: <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">.sum()</code>, <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">.mean()</code>, <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">.median()</code>, <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">.std()</code>, <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">.min()</code>, <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">.max()</code>. Each is vectorised. Each runs in milliseconds.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A retail analyst at DMart is looking at <strong>daily revenue for 10 days</strong>. The CFO wants to know: average daily revenue, the median (less affected by outliers), and how volatile sales were (standard deviation). One NumPy call per question.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Pick a stat &mdash; watch it compute</div>
+        <div class="viz-btn-group">
+          <button class="viz-btn-mini active" id="stat-btn-sum" onclick="playStat('sum')">.sum()</button>
+          <button class="viz-btn-mini" id="stat-btn-mean" onclick="playStat('mean')">.mean()</button>
+          <button class="viz-btn-mini" id="stat-btn-median" onclick="playStat('median')">.median()</button>
+          <button class="viz-btn-mini" id="stat-btn-std" onclick="playStat('std')">.std()</button>
+          <button class="viz-btn-mini" id="stat-btn-min" onclick="playStat('min')">.min()</button>
+          <button class="viz-btn-mini" id="stat-btn-max" onclick="playStat('max')">.max()</button>
+        </div>
+      </div>
+      <div class="step-explainer" id="statExplain">
+        <div class="step-explainer-label">Ready · sum</div>
+        <div class="step-explainer-text"><code>.sum()</code> adds every value in the array together. Click any function above to see how it works on the same 10 days of revenue.</div>
+      </div>
+      <div class="stage" style="min-height:340px;justify-content:center">
+        <div class="stat-wrap">
+          <div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Daily revenue (₹ thousands) — last 10 days</div>
+          <div class="stat-bars" id="statBars" style="margin-top:.5rem">
+            <div class="stat-bar" data-val="42" style="height:50px"><div class="stat-bar-val">42</div><div class="stat-bar-label">D1</div></div>
+            <div class="stat-bar" data-val="58" style="height:70px"><div class="stat-bar-val">58</div><div class="stat-bar-label">D2</div></div>
+            <div class="stat-bar" data-val="51" style="height:62px"><div class="stat-bar-val">51</div><div class="stat-bar-label">D3</div></div>
+            <div class="stat-bar" data-val="73" style="height:88px"><div class="stat-bar-val">73</div><div class="stat-bar-label">D4</div></div>
+            <div class="stat-bar" data-val="46" style="height:55px"><div class="stat-bar-val">46</div><div class="stat-bar-label">D5</div></div>
+            <div class="stat-bar" data-val="61" style="height:74px"><div class="stat-bar-val">61</div><div class="stat-bar-label">D6</div></div>
+            <div class="stat-bar" data-val="68" style="height:82px"><div class="stat-bar-val">68</div><div class="stat-bar-label">D7</div></div>
+            <div class="stat-bar" data-val="55" style="height:66px"><div class="stat-bar-val">55</div><div class="stat-bar-label">D8</div></div>
+            <div class="stat-bar" data-val="82" style="height:99px"><div class="stat-bar-val">82</div><div class="stat-bar-label">D9</div></div>
+            <div class="stat-bar" data-val="49" style="height:59px"><div class="stat-bar-val">49</div><div class="stat-bar-label">D10</div></div>
+            <div class="stat-line" id="statLine"><span class="stat-line-label" id="statLineLabel"></span></div>
+          </div>
+          <div class="stat-result" id="statResult">
+            <span class="label" id="statResultLabel">SUM</span>
+            <span class="val" id="statResultVal">585</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">stats.py</span></div>
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+revenue = np.<span class="code-fn">array</span>([<span class="code-num">42</span>, <span class="code-num">58</span>, <span class="code-num">51</span>, <span class="code-num">73</span>, <span class="code-num">46</span>,
+                    <span class="code-num">61</span>, <span class="code-num">68</span>, <span class="code-num">55</span>, <span class="code-num">82</span>, <span class="code-num">49</span>])
+
+<span class="code-comment"># Each stat is a single method call</span>
+revenue.<span class="code-fn">sum</span>()      <span class="code-comment"># 585 → total over 10 days</span>
+revenue.<span class="code-fn">mean</span>()     <span class="code-comment"># 58.5 → average daily revenue</span>
+np.<span class="code-fn">median</span>(revenue) <span class="code-comment"># 56.5 → robust to outliers</span>
+revenue.<span class="code-fn">std</span>()      <span class="code-comment"># 12.0 → daily volatility</span>
+revenue.<span class="code-fn">min</span>()      <span class="code-comment"># 42 → worst day</span>
+revenue.<span class="code-fn">max</span>()      <span class="code-comment"># 82 → best day</span>
+
+<span class="code-comment"># Want them all together?</span>
+np.<span class="code-fn">describe</span>(revenue)
+      </div>
+      <div class="output-block">
+<span style="color:#9597A6">Quick CFO briefing:</span>
+
+  total ......... ₹5,85,000
+  mean .......... ₹58,500/day
+  median ........ ₹56,500/day
+  std ........... ₹12,000
+  min ........... ₹42,000  (Day 1)
+  max ........... ₹82,000  (Day 9)
+
+<span style="color:#FFA657">Analyst insight:</span>
+  mean &gt; median  →  upper outlier
+                    (the big day 9 lifts
+                    the average above
+                    the typical day)
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key takeaway</div>
+      <div class="takeaway-text">Statistical functions are NumPy's <strong>summary toolkit</strong>. They turn an array of 10 (or 10 million) numbers into a single insight. Pay attention to <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">mean vs median</code> — when they diverge, you have a skewed distribution (outliers pulling the average).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LESSON 3: COLUMN-LEVEL CALCULATIONS ═══════════════════════ -->
+<section class="lesson" id="axis">
+  <div class="lesson-inner">
+    <div class="lesson-header">
+      <div class="lesson-num">3</div>
+      <div class="lesson-header-text">
+        <div class="lesson-eyebrow">The Direction Dial</div>
+        <h2 class="lesson-title">Column-level Calculations — Choosing your axis</h2>
+        <p class="lesson-sub">Real datasets are 2D — rows and columns. NumPy lets you aggregate <strong>along a chosen axis</strong>. <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">axis=0</code> collapses rows (gives you per-column totals), <code style="font-family:'JetBrains Mono',monospace;background:var(--orange-glow);color:var(--orange-dark);padding:.1rem .4rem;border-radius:4px">axis=1</code> collapses columns (gives you per-row totals). One mental model unlocks all 2D analysis.</p>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <div class="scenario-label">Industry Scenario</div>
+      <div class="scenario-text">A regional manager at Big Bazaar has sales data for <strong>4 stores</strong> across <strong>4 months</strong>. Two questions: <strong>(a)</strong> Which month was best across all stores? <strong>(b)</strong> Which store was top this quarter? Same data, two axes.</div>
+    </div>
+
+    <div class="viz-container">
+      <div class="viz-controls">
+        <div class="viz-title"><span class="viz-title-dot"></span>Pick an axis &mdash; watch the totals form</div>
+        <div class="viz-btn-group">
+          <button class="viz-btn-mini active" id="axis-btn-0" onclick="playAxis(0)">axis=0 (down columns)</button>
+          <button class="viz-btn-mini" id="axis-btn-1" onclick="playAxis(1)">axis=1 (across rows)</button>
+        </div>
+      </div>
+      <div class="step-explainer" id="axisExplain">
+        <div class="step-explainer-label">Ready · axis=0</div>
+        <div class="step-explainer-text"><code>axis=0</code> means "collapse along rows" → you end up with <strong>one value per column</strong>. Useful when columns are months: gives you total per month.</div>
+      </div>
+      <div class="stage" style="min-height:380px;padding:2rem 1rem">
+        <div class="mat-wrap">
+          <div class="mat-axis-label axis-0" id="axisLabel"><span id="axisLabelText">sales.sum(axis=0)</span></div>
+          <div class="mat-with-labels">
+            <div class="mat-col-headers">
+              <div>Jan</div><div>Feb</div><div>Mar</div><div>Apr</div>
+            </div>
+            <div class="mat-row-headers">
+              <div>Mumbai</div>
+              <div>Pune</div>
+              <div>Delhi</div>
+              <div>BLR</div>
+            </div>
+            <div class="mat-grid" id="matGrid">
+              <div class="mat-cell" data-row="0" data-col="0">42</div>
+              <div class="mat-cell" data-row="0" data-col="1">51</div>
+              <div class="mat-cell" data-row="0" data-col="2">48</div>
+              <div class="mat-cell" data-row="0" data-col="3">55</div>
+              <div class="mat-cell" data-row="1" data-col="0">38</div>
+              <div class="mat-cell" data-row="1" data-col="1">45</div>
+              <div class="mat-cell" data-row="1" data-col="2">52</div>
+              <div class="mat-cell" data-row="1" data-col="3">49</div>
+              <div class="mat-cell" data-row="2" data-col="0">61</div>
+              <div class="mat-cell" data-row="2" data-col="1">58</div>
+              <div class="mat-cell" data-row="2" data-col="2">66</div>
+              <div class="mat-cell" data-row="2" data-col="3">70</div>
+              <div class="mat-cell" data-row="3" data-col="0">29</div>
+              <div class="mat-cell" data-row="3" data-col="1">35</div>
+              <div class="mat-cell" data-row="3" data-col="2">41</div>
+              <div class="mat-cell" data-row="3" data-col="3">38</div>
+            </div>
+            <div class="mat-row-totals" id="rowTotals">
+              <div data-val="196">196</div>
+              <div data-val="184">184</div>
+              <div data-val="255">255</div>
+              <div data-val="143">143</div>
+            </div>
+            <div class="mat-col-totals" id="colTotals">
+              <div data-val="170">170</div>
+              <div data-val="189">189</div>
+              <div data-val="207">207</div>
+              <div data-val="212">212</div>
+            </div>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-muted);text-align:center;font-style:italic;margin-top:.5rem">Numbers shown are ₹ lakhs of sales</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="code-block">
+        <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">axis.py</span></div>
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># 4 stores × 4 months</span>
+sales = np.<span class="code-fn">array</span>([
+    [<span class="code-num">42</span>, <span class="code-num">51</span>, <span class="code-num">48</span>, <span class="code-num">55</span>],  <span class="code-comment"># Mumbai</span>
+    [<span class="code-num">38</span>, <span class="code-num">45</span>, <span class="code-num">52</span>, <span class="code-num">49</span>],  <span class="code-comment"># Pune</span>
+    [<span class="code-num">61</span>, <span class="code-num">58</span>, <span class="code-num">66</span>, <span class="code-num">70</span>],  <span class="code-comment"># Delhi</span>
+    [<span class="code-num">29</span>, <span class="code-num">35</span>, <span class="code-num">41</span>, <span class="code-num">38</span>],  <span class="code-comment"># BLR</span>
+])
+
+<span class="code-comment"># axis=0 → total PER MONTH (down columns)</span>
+sales.<span class="code-fn">sum</span>(axis=<span class="code-num">0</span>)
+<span class="code-comment"># → [170, 189, 207, 212]  ← Apr was best</span>
+
+<span class="code-comment"># axis=1 → total PER STORE (across rows)</span>
+sales.<span class="code-fn">sum</span>(axis=<span class="code-num">1</span>)
+<span class="code-comment"># → [196, 184, 255, 143]  ← Delhi led</span>
+
+<span class="code-comment"># Same idea works with mean, max, std…</span>
+sales.<span class="code-fn">mean</span>(axis=<span class="code-num">1</span>)
+      </div>
+      <div class="output-block">
+<span style="color:#9597A6">Monthly totals (axis=0):</span>
+  Jan: 170    Feb: 189
+  Mar: 207    Apr: 212  ★ peak
+
+<span style="color:#9597A6">Store totals (axis=1):</span>
+  Mumbai: 196
+  Pune  : 184
+  Delhi : 255  ★ top performer
+  BLR   : 143
+
+<span style="color:#FFA657">Insight (axis=0):</span>
+  Sales are growing month-over-month
+  → seasonality kicking in.
+
+<span style="color:#FFA657">Insight (axis=1):</span>
+  Delhi outperforms by 30% → study
+  what they're doing differently.
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key takeaway</div>
+      <div class="takeaway-text">Every aggregation answer comes from <strong>"which direction am I summarising?"</strong> &mdash; <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">axis=0</code> collapses rows into one value per column, <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">axis=1</code> collapses columns into one value per row. Memorise this once and every <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">.sum()</code>, <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">.mean()</code>, <code style="background:rgba(255,255,255,0.1);color:#FFA657;padding:.1rem .35rem;border-radius:3px;font-family:'JetBrains Mono',monospace">.max()</code> on 2D data follows.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">Moksh<em>Path</em></div>
+    <p class="footer-sub">Vectorisation. Statistics. Axis-based aggregation. The three NumPy patterns that handle 90% of analytics work — and make Python finally fast enough for real data.</p>
+    <nav class="footer-nav">
+      <a href="01-python-review.html">← Lesson 01 · Python Review</a>
+      <a href="02-pandas-essentials.html">Lesson 02 · Pandas Essentials</a>
+      <a href="03-data-cleaning.html">← Lesson 03 · Data Cleaning</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ─── LESSON 1: VECTORISATION ─── */
+function resetVec() {
+  document.querySelectorAll('#loopCells .vec-cell, #vectorCells .vec-cell').forEach(c => {
+    c.classList.remove('processing','done','processing-all');
+    c.textContent = c.getAttribute('data-orig');
+  });
+  document.getElementById('loopTime').textContent = '0.000s';
+  document.getElementById('vectorTime').textContent = '0.000s';
+  document.getElementById('loopPanel').classList.remove('dim');
+  document.getElementById('vectorPanel').classList.remove('dim');
+}
+
+async function playLoop() {
+  resetVec();
+  document.getElementById('vectorPanel').classList.add('dim');
+  const exp = document.getElementById('vecExplain');
+  exp.innerHTML = `<div class="step-explainer-label">Running · Python for-loop</div><div class="step-explainer-text">One cell processed at a time. Watch each cell light up, get multiplied, then move to the next. With 10 items it's quick — with 10 million, this is the slow way.</div>`;
+  const cells = document.querySelectorAll('#loopCells .vec-cell');
+  let t = 0;
+  for (let i = 0; i < cells.length; i++) {
+    cells[i].classList.add('processing');
+    await sleep(380);
+    const orig = parseFloat(cells[i].getAttribute('data-orig'));
+    const newVal = (orig * 1.18).toFixed(1);
+    cells[i].textContent = newVal;
+    cells[i].classList.remove('processing');
+    cells[i].classList.add('done');
+    t += 0.024;
+    document.getElementById('loopTime').textContent = t.toFixed(3) + 's';
+  }
+  await sleep(400);
+  document.getElementById('loopTime').textContent = '0.240s';
+  exp.innerHTML = `<div class="step-explainer-label">Done · loop finished</div><div class="step-explainer-text">10 cells took ~0.24 s of animation. On 10 million real prices, the same pattern would take roughly <strong>12 seconds</strong>. Now try the vectorised button.</div>`;
+}
+
+async function playVector() {
+  resetVec();
+  document.getElementById('loopPanel').classList.add('dim');
+  const exp = document.getElementById('vecExplain');
+  exp.innerHTML = `<div class="step-explainer-label">Running · NumPy vectorised</div><div class="step-explainer-text">A single expression <code>prices * 1.18</code>. NumPy processes every cell in parallel through compiled C code. There is no Python loop happening at all.</div>`;
+  const cells = document.querySelectorAll('#vectorCells .vec-cell');
+  // all light up at once
+  cells.forEach(c => c.classList.add('processing-all'));
+  await sleep(550);
+  cells.forEach((c, i) => {
+    const orig = parseFloat(c.getAttribute('data-orig'));
+    c.textContent = (orig * 1.18).toFixed(1);
+  });
+  await sleep(450);
+  cells.forEach(c => { c.classList.remove('processing-all'); c.classList.add('done'); });
+  document.getElementById('vectorTime').textContent = '0.002s';
+  await sleep(700);
+  exp.innerHTML = `<div class="step-explainer-label">Done · ~100× faster</div><div class="step-explainer-text">Every cell updated in a single flash. The same operation on 10 million prices would take <strong>~0.08 seconds</strong>. <strong>Same answer. 150× faster.</strong></div>`;
+}
+
+/* ─── LESSON 2: STATISTICAL FUNCTIONS ─── */
+function resetStat() {
+  document.querySelectorAll('.stat-bar').forEach(b => b.classList.remove('highlight','dim'));
+  document.getElementById('statResult').classList.remove('show');
+  document.getElementById('statLine').classList.remove('visible');
+  document.querySelectorAll('[id^=stat-btn-]').forEach(b => b.classList.remove('active'));
+}
+
+async function playStat(kind) {
+  resetStat();
+  document.getElementById('stat-btn-'+kind).classList.add('active');
+  const exp = document.getElementById('statExplain');
+  const bars = document.querySelectorAll('.stat-bar');
+  const vals = Array.from(bars).map(b => parseFloat(b.getAttribute('data-val')));
+  const result = document.getElementById('statResult');
+  const resLabel = document.getElementById('statResultLabel');
+  const resVal = document.getElementById('statResultVal');
+  const line = document.getElementById('statLine');
+  const lineLabel = document.getElementById('statLineLabel');
+
+  const configs = {
+    sum: {
+      label: '.sum()',
+      explain: 'Adding every bar together: 42 + 58 + 51 + 73 + 46 + 61 + 68 + 55 + 82 + 49 = <strong>585</strong>.',
+      done: '<strong>.sum() = 585</strong>. Total revenue across all 10 days.',
+      compute: () => vals.reduce((a,b) => a+b, 0)
+    },
+    mean: {
+      label: '.mean()',
+      explain: 'Sum divided by count: 585 ÷ 10 = <strong>58.5</strong>. The "average day".',
+      done: '<strong>.mean() = 58.5</strong>. Average daily revenue. Note: this is pulled upward by Day 9 (the 82 outlier).',
+      compute: () => {
+        const m = vals.reduce((a,b) => a+b, 0) / vals.length;
+        return m.toFixed(1);
+      }
+    },
+    median: {
+      label: '.median()',
+      explain: 'Sort the values, take the middle. For 10 values, average the 5th and 6th: 55 and 58 → <strong>56.5</strong>. Robust against outliers.',
+      done: '<strong>.median() = 56.5</strong>. The "typical" day. Notice it\'s slightly lower than the mean — that\'s the Day 9 outlier pulling the mean up.',
+      compute: () => {
+        const s = [...vals].sort((a,b) => a-b);
+        return ((s[4] + s[5]) / 2).toFixed(1);
+      }
+    },
+    std: {
+      label: '.std()',
+      explain: 'Standard deviation = how much the values spread around the mean. ~<strong>12.0</strong> means days vary by about ±12 from the average. Higher std = more volatile.',
+      done: '<strong>.std() ≈ 12.0</strong>. The volatility. A flat sales line would show std near 0; a wild one would show 30+.',
+      compute: () => {
+        const m = vals.reduce((a,b)=>a+b,0)/vals.length;
+        const v = vals.reduce((a,b)=>a+(b-m)**2, 0) / vals.length;
+        return Math.sqrt(v).toFixed(1);
+      }
+    },
+    min: {
+      label: '.min()',
+      explain: 'Scan every bar, find the shortest one. Day 1 with <strong>42</strong> is the worst day.',
+      done: '<strong>.min() = 42</strong> (Day 1). The worst-performing day.',
+      compute: () => Math.min(...vals)
+    },
+    max: {
+      label: '.max()',
+      explain: 'Scan every bar, find the tallest one. Day 9 with <strong>82</strong> dominates.',
+      done: '<strong>.max() = 82</strong> (Day 9). The best-performing day. Worth investigating: was it a promotion, weekend, or one-off?',
+      compute: () => Math.max(...vals)
+    }
+  };
+  const cfg = configs[kind];
+  exp.innerHTML = `<div class="step-explainer-label">Running · ${cfg.label}</div><div class="step-explainer-text">${cfg.explain}</div>`;
+
+  if (kind === 'sum' || kind === 'mean') {
+    // Light up each bar in sequence
+    for (let i=0; i<bars.length; i++) {
+      bars[i].classList.add('highlight');
+      await sleep(170);
+    }
+    await sleep(450);
+    if (kind === 'mean') {
+      // show mean line at 58.5/85 * 100% of stat-bars height (160px); height of bar = val * 1.2 roughly
+      // We use the bar heights themselves to position. Use 58.5 → height ~70
+      const meanHeight = 58.5 * 1.2;
+      line.style.bottom = meanHeight + 'px';
+      lineLabel.textContent = 'mean = 58.5';
+      line.classList.add('visible');
+      await sleep(400);
+    }
+    bars.forEach(b => b.classList.remove('highlight'));
+  }
+  else if (kind === 'median') {
+    // first dim all
+    bars.forEach(b => b.classList.add('dim'));
+    await sleep(350);
+    // highlight the two middle values (sorted): 55 (bar idx 7) and 58 (bar idx 1)
+    bars[7].classList.remove('dim'); bars[7].classList.add('highlight');
+    bars[1].classList.remove('dim'); bars[1].classList.add('highlight');
+    await sleep(1200);
+    const medianHeight = 56.5 * 1.2;
+    line.style.bottom = medianHeight + 'px';
+    lineLabel.textContent = 'median = 56.5';
+    line.classList.add('visible');
+    await sleep(600);
+    bars.forEach(b => { b.classList.remove('dim'); b.classList.remove('highlight'); });
+  }
+  else if (kind === 'std') {
+    // show mean line first
+    const meanHeight = 58.5 * 1.2;
+    line.style.bottom = meanHeight + 'px';
+    lineLabel.textContent = 'mean';
+    line.classList.add('visible');
+    await sleep(700);
+    // highlight bars in sequence to show "distance from mean"
+    for (let i=0; i<bars.length; i++) {
+      bars[i].classList.add('highlight');
+      await sleep(140);
+      bars[i].classList.remove('highlight');
+    }
+    lineLabel.textContent = 'mean ±12';
+  }
+  else if (kind === 'min' || kind === 'max') {
+    const target = kind === 'min' ? Math.min(...vals) : Math.max(...vals);
+    const idx = vals.indexOf(target);
+    bars.forEach(b => b.classList.add('dim'));
+    await sleep(400);
+    bars[idx].classList.remove('dim');
+    bars[idx].classList.add('highlight');
+    await sleep(1200);
+    bars.forEach(b => { b.classList.remove('dim'); b.classList.remove('highlight'); });
+  }
+
+  // Show result
+  resLabel.textContent = kind.toUpperCase();
+  resVal.textContent = cfg.compute();
+  result.classList.add('show');
+  await sleep(900);
+  exp.innerHTML = `<div class="step-explainer-label">Done · ${cfg.label}</div><div class="step-explainer-text">${cfg.done}</div>`;
+}
+
+/* ─── LESSON 3: AXIS-BASED AGGREGATION ─── */
+function resetAxis() {
+  document.querySelectorAll('.mat-cell').forEach(c => c.classList.remove('col-active','row-active'));
+  document.querySelectorAll('#rowTotals div, #colTotals div').forEach(d => d.classList.remove('show'));
+  document.querySelectorAll('[id^=axis-btn-]').forEach(b => b.classList.remove('active'));
+}
+
+async function playAxis(axis) {
+  resetAxis();
+  document.getElementById('axis-btn-' + axis).classList.add('active');
+  const exp = document.getElementById('axisExplain');
+  const label = document.getElementById('axisLabel');
+  const labelText = document.getElementById('axisLabelText');
+  label.classList.remove('axis-0','axis-1');
+  label.classList.add('axis-' + axis);
+  labelText.textContent = `sales.sum(axis=${axis})`;
+
+  if (axis === 0) {
+    exp.innerHTML = `<div class="step-explainer-label">Running · axis=0 (down columns)</div><div class="step-explainer-text">For each <strong>column</strong>, add up all 4 rows. Imagine an arrow pointing <strong>down</strong> through each column. The result is one number per month.</div>`;
+    const totals = document.querySelectorAll('#colTotals div');
+    for (let col=0; col<4; col++) {
+      // Highlight column cells
+      for (let row=0; row<4; row++) {
+        const cell = document.querySelector(`.mat-cell[data-row="${row}"][data-col="${col}"]`);
+        cell.classList.add('col-active');
+        await sleep(110);
+      }
+      await sleep(280);
+      // Show total
+      totals[col].classList.add('show');
+      await sleep(450);
+      // Clear column highlights for next iteration
+      for (let row=0; row<4; row++) {
+        const cell = document.querySelector(`.mat-cell[data-row="${row}"][data-col="${col}"]`);
+        cell.classList.remove('col-active');
+      }
+    }
+    exp.innerHTML = `<div class="step-explainer-label">Done · axis=0 totals</div><div class="step-explainer-text"><strong>[170, 189, 207, 212]</strong> — one total per month. <strong>April peaked at 212</strong>. Sales are growing month over month.</div>`;
+  }
+  else {
+    exp.innerHTML = `<div class="step-explainer-label">Running · axis=1 (across rows)</div><div class="step-explainer-text">For each <strong>row</strong>, add up all 4 columns. Imagine an arrow pointing <strong>right</strong> across each row. The result is one number per store.</div>`;
+    const totals = document.querySelectorAll('#rowTotals div');
+    for (let row=0; row<4; row++) {
+      for (let col=0; col<4; col++) {
+        const cell = document.querySelector(`.mat-cell[data-row="${row}"][data-col="${col}"]`);
+        cell.classList.add('row-active');
+        await sleep(110);
+      }
+      await sleep(280);
+      totals[row].classList.add('show');
+      await sleep(450);
+      for (let col=0; col<4; col++) {
+        const cell = document.querySelector(`.mat-cell[data-row="${row}"][data-col="${col}"]`);
+        cell.classList.remove('row-active');
+      }
+    }
+    exp.innerHTML = `<div class="step-explainer-label">Done · axis=1 totals</div><div class="step-explainer-text"><strong>[196, 184, 255, 143]</strong> — one total per store. <strong>Delhi leads at 255</strong> — 30% above the next store. Worth studying their playbook.</div>`;
+  }
+}
+
+// Auto-play first animations
+window.addEventListener('load', () => {
+  setTimeout(() => playVector(), 1500);
+});
+</script>
+</body>
+</html>
